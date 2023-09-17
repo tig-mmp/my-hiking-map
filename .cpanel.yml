@@ -1,5 +1,5 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/tiagopin/vue/
+    - export DEPLOYPATH=/home/tiagopin/repositories/my-hiking-map/
     - /bin/cp -R images $DEPLOYPATH
