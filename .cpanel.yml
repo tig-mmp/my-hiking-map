@@ -1,5 +1,5 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/tiagopin/public_html/
+    - export DEPLOYPATH=/home/tiagopin/vue/
     - /bin/cp -R images $DEPLOYPATH
