@@ -1,3 +1,5 @@
+---
 deployment:
   tasks:
     - export DEPLOYPATH=/home/tiagopin/public_html/
+    - /bin/cp -R images $DEPLOYPATH
