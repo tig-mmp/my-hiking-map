@@ -3,7 +3,8 @@ deployment:
   tasks:
     - export DEPLOYPATH=/home/tiagopin/repositories/my-hiking-map
     - export DEPLOYPATHFRONT=/home/tiagopin/repositories
-    # - /bin/cp -R ./vue-my-hiking-map/index.html $DEPLOYPATHFRONT
+    - /bin/cp -R ./vue-my-hiking-map/index.html $DEPLOYPATHFRONT
+    - npm i --prefix ./vue-my-hiking-map
     - npm run build --prefix ./vue-my-hiking-map
     - /bin/cp -R vue-my-hiking-map/dist/* $DEPLOYPATHFRONT
     # - /bin/cp -R images $DEPLOYPATH
