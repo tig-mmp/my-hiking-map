@@ -1,12 +1,24 @@
----
+build_commands:
+  symfony:
+    - cd symfony-my-hiking-map
+    - composer install
+
+  vue:
+    - cd vue-my-hiking-map
+    - npm install
+    - npm run build
+
 deployment:
-  tasks:
-    - export DEPLOYPATH=/home/tiagopin/repositories/my-hiking-map
-    - export DEPLOYPATHFRONT=/home/tiagopin/repositories
-    - /bin/cp -R ./vue-my-hiking-map/index.html $DEPLOYPATHFRONT
-    - npm i --prefix ./vue-my-hiking-map
-    - npm run build --prefix ./vue-my-hiking-map
-    - /bin/cp -R vue-my-hiking-map/dist/* $DEPLOYPATHFRONT
+  vue:
+    destination: /home/tiagopin/repositories
+
+  # tasks:
+  #   - export DEPLOYPATH=/home/tiagopin/repositories/my-hiking-map
+  #   - export DEPLOYPATHFRONT=/home/tiagopin/repositories
+  #   - /bin/cp -R ./vue-my-hiking-map/index.html $DEPLOYPATHFRONT
+  #   - npm install --prefix ./vue-my-hiking-map
+  #   - npm run build --prefix ./vue-my-hiking-map
+  #   - /bin/cp -R vue-my-hiking-map/dist/* $DEPLOYPATHFRONT
     # - /bin/cp -R images $DEPLOYPATH
     # - /bin/cp -R images /home/tiagopin/repositories/my-hiking-map /home/tiagopin/repositories
     # - export DEPLOYPATHFRONT=/home/tiagopin/public_html/new_site/frontend
