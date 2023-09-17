@@ -1,5 +1,6 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/tiagopin/repositories/
+    - export DEPLOYPATH=/home/tiagopin/repositories/my-hiking-map
     - /bin/cp -R images $DEPLOYPATH
+    - /bin/cp -R images /home/tiagopin/repositories/my-hiking-map /home/tiagopin/repositories
