@@ -1,17 +1,5 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/tiagopin/repositories/my-hiking-map
     - export DEPLOYPATHFRONT=/home/tiagopin/repositories
-    - npm run build --prefix /vue-my-hiking-map
-    - /bin/cp -R vue-my-hiking-map/build/* $DEPLOYPATHFRONT
-    # - /bin/cp -R images $DEPLOYPATH
-    # - /bin/cp -R images /home/tiagopin/repositories/my-hiking-map /home/tiagopin/repositories
-    # - export DEPLOYPATHFRONT=/home/tiagopin/public_html/new_site/frontend
-    # - /bin/cp -R frontend/* $DEPLOYPATHFRONT
-    # - export DEPLOYPATHBACK=/home/tiagopin/public_html/new_site/backend
-    # - /bin/cp -R backend/* $DEPLOYPATHBACK
-    # - npm run build --prefix /home/tiagopin/public_html/new_site/backend
-    # - npm run start --prefix /home/tiagopin/public_html/new_site/backend
-    # - npm run build --prefix /home/tiagopin/public_html/new_site/frontend
-    # - npm run start --prefix /home/tiagopin/public_html/new_site/frontend
+    - /bin/cp -R ./vue-my-hiking-map/index.html $DEPLOYPATHFRONT
