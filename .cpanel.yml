@@ -1,5 +1,3 @@
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/tiagopin/my-hiking-map/
-    # - npm run build --prefix /vue-my-hiking-map
-    # - cp /home/tiagopin/my-hiking-map/vue-my-hiking-map/dist /home/tiagopin/public_html
+    - export DEPLOYPATH=/home/tiagopin/public_html/
