@@ -1,16 +1,16 @@
-build_commands:
-  symfony:
-    - cd symfony-my-hiking-map
-    - composer install
+# build_commands:
+#   symfony:
+#     - cd symfony-my-hiking-map
+#     - composer install
 
-  vue:
-    - cd vue-my-hiking-map
-    - npm install
-    - npm run build
+#   vue:
+#     - cd vue-my-hiking-map
+#     - npm install
+#     - npm run build
 
-deployment:
-  vue:
-    destination: /home/tiagopin/repositories
+# deployment:
+#   vue:
+#     destination: /home/tiagopin/repositories
 
 tasks:
   - name: Copy Symfony Code
