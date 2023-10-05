@@ -13,4 +13,10 @@ class PingController extends AbstractController
     {
         return $this->json("PONG", 200);
     }
+
+    #[Route("/api/123", name: "oneTwoThree", methods: ["GET"])]
+    public function oneTwoThree(): Response
+    {
+        return $this->json("456", 200);
+    }
 }
