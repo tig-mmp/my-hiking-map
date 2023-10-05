@@ -1,3 +1,12 @@
+tasks:
+    - name: Copy Symfony Code
+        command: cp -r symfony-my-hiking-map /home/tiagopin/symfony
+
+  # - name: Install Composer Dependencies
+  #   command: composer install
+  #   root_directory: /home/tiagopin/symfony
+
+
 # build_commands:
 #   symfony:
 #     - cd symfony-my-hiking-map
@@ -11,14 +20,6 @@
 # deployment:
 #   vue:
 #     destination: /home/tiagopin/repositories
-
-tasks:
-  - name: Copy Symfony Code
-    command: cp -r symfony-my-hiking-map /home/tiagopin/symfony
-
-  - name: Install Composer Dependencies
-    command: composer install
-    root_directory: /home/tiagopin/symfony
 
   # tasks:
   #   - export DEPLOYPATH=/home/tiagopin/repositories/my-hiking-map
