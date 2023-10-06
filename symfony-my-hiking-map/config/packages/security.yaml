@@ -1,0 +1,12 @@
+security:
+  firewalls:
+    api:
+      pattern: ^/api
+      stateless: true
+      anonymous: false
+      provider: in_memory
+      json_login:
+        check_path: api_login
+      guard:
+          authenticators:
+              - App\Security\ApiTokenAuthenticator
