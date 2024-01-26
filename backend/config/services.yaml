@@ -22,4 +22,4 @@ services:
 
   App\Service\JwtService:
     arguments:
-      $secretKey: "%env(JWT_SECRET_KEY)%"
+      $passPhrase: "%env(JWT_PASS_PHRASE)%"
