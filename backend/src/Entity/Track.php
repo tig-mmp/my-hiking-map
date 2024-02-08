@@ -1,0 +1,416 @@
+<?php
+
+namespace App\Entity;
+
+use App\Repository\TrackRepository;
+use DateTimeInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
+
+#[Entity(repositoryClass: TrackRepository::class)]
+class Track
+{
+    #[Id]
+    #[GeneratedValue]
+    #[Column]
+    private ?int $id = null;
+
+    #[Column(nullable: true)]
+    private ?int $startLocationId = null;
+
+    #[ManyToOne(inversedBy: "tracks")]
+    private ?Location $startLocation = null;
+
+    #[Column(length: 255)]
+    private ?string $name = null;
+
+    #[Column(length: 1000, nullable: true)]
+    private ?string $description = null;
+
+    #[Column(nullable: true)]
+    private ?float $distance = null;
+
+    #[Column(length: 20, nullable: true)]
+    private ?string $routeCode = null;
+
+    #[Column(type: Types::SMALLINT, nullable: true)]
+    private ?int $difficulty = null;
+
+    #[Column(type: Types::SMALLINT, nullable: true)]
+    private ?int $landscape = null;
+
+    #[Column(type: Types::SMALLINT, nullable: true)]
+    private ?int $enjoyment = null;
+
+    #[Column(length: 100, nullable: true)]
+    private ?string $trackUrl = null;
+
+    #[Column(length: 100, nullable: true)]
+    private ?string $officialUrl = null;
+
+    #[Column(length: 100, nullable: true)]
+    private ?string $groupName = null;
+
+    #[Column(length: 100, nullable: true)]
+    private ?string $guide = null;
+
+    #[Column(type: Types::SMALLINT, nullable: true)]
+    private ?int $weekNumber = null;
+
+    #[Column]
+    private ?bool $isMoita = false;
+
+    #[Column(type: Types::TIME_MUTABLE, nullable: true)]
+    private ?DateTimeInterface $duration = null;
+
+    #[Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?DateTimeInterface $date = null;
+
+    #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?DateTimeInterface $startedAt = null;
+
+    #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?DateTimeInterface $endedAt = null;
+
+    #[Column(type: Types::DATETIME_MUTABLE)]
+    private ?DateTimeInterface $createdAt = null;
+
+    #[Column(type: Types::DATETIME_MUTABLE)]
+    private ?DateTimeInterface $updatedAt = null;
+
+    #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?DateTimeInterface $deletedAt = null;
+
+    #[OneToMany(mappedBy: "track", targetEntity: TrackLocation::class)]
+    private Collection $trackLocations;
+
+    #[OneToMany(mappedBy: "track", targetEntity: Landmark::class)]
+    private Collection $landmarks;
+
+    #[OneToMany(mappedBy: "track", targetEntity: Point::class)]
+    private Collection $points;
+
+    public function __construct()
+    {
+        $this->trackLocations = new ArrayCollection();
+        $this->landmarks = new ArrayCollection();
+        $this->points = new ArrayCollection();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getStartLocationId(): ?int
+    {
+        return $this->startLocationId;
+    }
+
+    public function setStartLocationId(?int $startLocationId)
+    {
+        $this->startLocationId = $startLocationId;
+    }
+
+    public function getStartLocation(): ?Location
+    {
+        return $this->startLocation;
+    }
+
+    public function setStartLocation(?Location $startLocation)
+    {
+        $this->startLocation = $startLocation;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name)
+    {
+        $this->name = $name;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description)
+    {
+        $this->description = $description;
+    }
+
+    public function getDistance(): ?float
+    {
+        return $this->distance;
+    }
+
+    public function setDistance(?float $distance)
+    {
+        $this->distance = $distance;
+    }
+
+    public function getRouteCode(): ?string
+    {
+        return $this->routeCode;
+    }
+
+    public function setRouteCode(?string $routeCode)
+    {
+        $this->routeCode = $routeCode;
+    }
+
+    public function getDifficulty(): ?int
+    {
+        return $this->difficulty;
+    }
+
+    public function setDifficulty(?int $difficulty)
+    {
+        $this->difficulty = $difficulty;
+    }
+
+    public function getLandscape(): ?int
+    {
+        return $this->landscape;
+    }
+
+    public function setLandscape(?int $landscape)
+    {
+        $this->landscape = $landscape;
+    }
+
+    public function getEnjoyment(): ?int
+    {
+        return $this->enjoyment;
+    }
+
+    public function setEnjoyment(?int $enjoyment)
+    {
+        $this->enjoyment = $enjoyment;
+    }
+
+    public function getTrackUrl(): ?string
+    {
+        return $this->trackUrl;
+    }
+
+    public function setTrackUrl(?string $trackUrl)
+    {
+        $this->trackUrl = $trackUrl;
+    }
+
+    public function getOfficialUrl(): ?string
+    {
+        return $this->officialUrl;
+    }
+
+    public function setOfficialUrl(?string $officialUrl)
+    {
+        $this->officialUrl = $officialUrl;
+    }
+
+    public function getGroupName(): ?string
+    {
+        return $this->groupName;
+    }
+
+    public function setGroupName(?string $groupName)
+    {
+        $this->groupName = $groupName;
+    }
+
+    public function getGuide(): ?string
+    {
+        return $this->guide;
+    }
+
+    public function setGuide(?string $guide)
+    {
+        $this->guide = $guide;
+    }
+
+    public function getWeekNumber(): ?int
+    {
+        return $this->weekNumber;
+    }
+
+    public function setWeekNumber(?int $weekNumber)
+    {
+        $this->weekNumber = $weekNumber;
+    }
+
+    public function isIsMoita(): ?bool
+    {
+        return $this->isMoita;
+    }
+
+    public function setIsMoita(bool $isMoita)
+    {
+        $this->isMoita = $isMoita;
+    }
+
+    public function getDuration(): ?DateTimeInterface
+    {
+        return $this->duration;
+    }
+
+    public function setDuration(?DateTimeInterface $duration)
+    {
+        $this->duration = $duration;
+    }
+
+    public function getDate(): ?DateTimeInterface
+    {
+        return $this->date;
+    }
+
+    public function setDate(?DateTimeInterface $date)
+    {
+        $this->date = $date;
+    }
+
+    public function getStartedAt(): ?DateTimeInterface
+    {
+        return $this->startedAt;
+    }
+
+    public function setStartedAt(?DateTimeInterface $startedAt)
+    {
+        $this->startedAt = $startedAt;
+    }
+
+    public function getEndedAt(): ?DateTimeInterface
+    {
+        return $this->endedAt;
+    }
+
+    public function setEndedAt(?DateTimeInterface $endedAt)
+    {
+        $this->endedAt = $endedAt;
+    }
+
+    public function getCreatedAt(): ?DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(DateTimeInterface $createdAt)
+    {
+        $this->createdAt = $createdAt;
+    }
+
+    public function getUpdatedAt(): ?DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(DateTimeInterface $updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
+    }
+
+    public function getDeletedAt(): ?DateTimeInterface
+    {
+        return $this->deletedAt;
+    }
+
+    public function setDeletedAt(?DateTimeInterface $deletedAt)
+    {
+        $this->deletedAt = $deletedAt;
+    }
+
+    /**
+     * @return Collection<int, TrackLocation>
+     */
+    public function getTrackLocations(): Collection
+    {
+        return $this->trackLocations;
+    }
+
+    public function addTrackLocation(TrackLocation $trackLocation)
+    {
+        if (!$this->trackLocations->contains($trackLocation)) {
+            $this->trackLocations->add($trackLocation);
+            $trackLocation->setTrack($this);
+        }
+    }
+
+    public function removeTrackLocation(TrackLocation $trackLocation)
+    {
+        if ($this->trackLocations->removeElement($trackLocation)) {
+            if ($trackLocation->getTrack() === $this) {
+                $trackLocation->setTrack(null);
+            }
+        }
+    }
+
+    /**
+     * @return Collection<int, Landmark>
+     */
+    public function getLandmarks(): Collection
+    {
+        return $this->landmarks;
+    }
+
+    public function addLandmark(Landmark $landmark): static
+    {
+        if (!$this->landmarks->contains($landmark)) {
+            $this->landmarks->add($landmark);
+            $landmark->setTrack($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLandmark(Landmark $landmark): static
+    {
+        if ($this->landmarks->removeElement($landmark)) {
+            // set the owning side to null (unless already changed)
+            if ($landmark->getTrack() === $this) {
+                $landmark->setTrack(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Point>
+     */
+    public function getPoints(): Collection
+    {
+        return $this->points;
+    }
+
+    public function addPoint(Point $point): static
+    {
+        if (!$this->points->contains($point)) {
+            $this->points->add($point);
+            $point->setTrack($this);
+        }
+
+        return $this;
+    }
+
+    public function removePoint(Point $point): static
+    {
+        if ($this->points->removeElement($point)) {
+            // set the owning side to null (unless already changed)
+            if ($point->getTrack() === $this) {
+                $point->setTrack(null);
+            }
+        }
+
+        return $this;
+    }
+}
