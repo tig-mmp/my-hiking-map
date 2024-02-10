@@ -22,12 +22,12 @@ class AuthController extends AbstractController
         $password = $parameters["password"];
 
         if (!$username || !$password) {
-            return $this->json(["error" => "Invalid credentials"], 401);
+            return $this->json(["msg_code" => "Invalid credentials"], Response::HTTP_UNAUTHORIZED);
         }
         $user = $userRep->findOneBy(["username" => $username]);
 
         if (!$user || !$passwordHasher->isPasswordValid($user, $password)) {
-            return $this->json(["error" => "Invalid credentials"], 401);
+            return $this->json(["msg_code" => "Invalid credentials"], Response::HTTP_UNAUTHORIZED);
         }
         $userData = ["role" => $user->getRole()];
         $userData = ["role" => "ADMIN"];
