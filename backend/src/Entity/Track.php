@@ -2,6 +2,9 @@
 
 namespace App\Entity;
 
+use App\Entity\Landmark;
+use App\Entity\Point;
+use App\Entity\TrackLocation;
 use App\Repository\TrackRepository;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -13,6 +16,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\OneToOne;
 
 #[Entity(repositoryClass: TrackRepository::class)]
 class Track
@@ -96,6 +100,12 @@ class Track
 
     #[OneToMany(mappedBy: "track", targetEntity: Point::class)]
     private Collection $points;
+
+    #[Column(nullable: true)]
+    private ?int $fileId = null;
+
+    #[OneToOne(cascade: ["persist", "remove"])]
+    private ?File $file = null;
 
     public function __construct()
     {
@@ -362,26 +372,21 @@ class Track
         return $this->landmarks;
     }
 
-    public function addLandmark(Landmark $landmark): static
+    public function addLandmark(Landmark $landmark)
     {
         if (!$this->landmarks->contains($landmark)) {
             $this->landmarks->add($landmark);
             $landmark->setTrack($this);
         }
-
-        return $this;
     }
 
-    public function removeLandmark(Landmark $landmark): static
+    public function removeLandmark(Landmark $landmark)
     {
         if ($this->landmarks->removeElement($landmark)) {
-            // set the owning side to null (unless already changed)
             if ($landmark->getTrack() === $this) {
                 $landmark->setTrack(null);
             }
         }
-
-        return $this;
     }
 
     /**
@@ -392,25 +397,40 @@ class Track
         return $this->points;
     }
 
-    public function addPoint(Point $point): static
+    public function addPoint(Point $point)
     {
         if (!$this->points->contains($point)) {
             $this->points->add($point);
             $point->setTrack($this);
         }
-
-        return $this;
     }
 
-    public function removePoint(Point $point): static
+    public function removePoint(Point $point)
     {
         if ($this->points->removeElement($point)) {
-            // set the owning side to null (unless already changed)
             if ($point->getTrack() === $this) {
                 $point->setTrack(null);
             }
         }
+    }
 
-        return $this;
+    public function getFileId(): ?int
+    {
+        return $this->fileId;
+    }
+
+    public function setFileId(?int $fileId)
+    {
+        $this->fileId = $fileId;
+    }
+
+    public function getFile(): ?File
+    {
+        return $this->file;
+    }
+
+    public function setFile(?File $file)
+    {
+        $this->file = $file;
     }
 }

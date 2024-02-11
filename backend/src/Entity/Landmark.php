@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToOne;
 
 #[Entity(repositoryClass: LandmarkRepository::class)]
 class Landmark
@@ -34,6 +35,18 @@ class Landmark
     #[ManyToOne(inversedBy: "landmarks")]
     #[JoinColumn(nullable: false)]
     private ?Track $track = null;
+
+    #[Column(nullable: true)]
+    private ?int $pointId = null;
+
+    #[ManyToOne(inversedBy: "landmarks")]
+    private ?Point $point = null;
+
+    #[Column(nullable: true)]
+    private ?int $fileId = null;
+
+    #[OneToOne(cascade: ["persist", "remove"])]
+    private ?File $file = null;
 
     public function getName(): ?string
     {
@@ -83,5 +96,45 @@ class Landmark
     public function setTrack(?Track $track)
     {
         $this->track = $track;
+    }
+
+    public function getPointId(): ?int
+    {
+        return $this->pointId;
+    }
+
+    public function setPointId(?int $pointId)
+    {
+        $this->pointId = $pointId;
+    }
+
+    public function getPoint(): ?Point
+    {
+        return $this->point;
+    }
+
+    public function setPoint(?Point $point)
+    {
+        $this->point = $point;
+    }
+
+    public function getFileId(): ?int
+    {
+        return $this->fileId;
+    }
+
+    public function setFileId(?int $fileId)
+    {
+        $this->fileId = $fileId;
+    }
+
+    public function getFile(): ?File
+    {
+        return $this->file;
+    }
+
+    public function setFile(?File $file)
+    {
+        $this->file = $file;
     }
 }

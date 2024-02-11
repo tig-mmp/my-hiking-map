@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Landmark;
 use App\Repository\LandmarkTypeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -9,6 +10,7 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\OneToMany;
 
 #[Entity(repositoryClass: LandmarkTypeRepository::class)]
 class LandmarkType
@@ -21,7 +23,7 @@ class LandmarkType
     #[Column(length: 100)]
     private ?string $name = null;
 
-    #[ORM\OneToMany(mappedBy: 'landmarkType', targetEntity: Landmark::class)]
+    #[OneToMany(mappedBy: "landmarkType", targetEntity: Landmark::class)]
     private Collection $landmarks;
 
     public function __construct()
@@ -39,11 +41,9 @@ class LandmarkType
         return $this->name;
     }
 
-    public function setName(string $name): static
+    public function setName(string $name)
     {
         $this->name = $name;
-
-        return $this;
     }
 
     /**
@@ -54,25 +54,20 @@ class LandmarkType
         return $this->landmarks;
     }
 
-    public function addLandmark(Landmark $landmark): static
+    public function addLandmark(Landmark $landmark)
     {
         if (!$this->landmarks->contains($landmark)) {
             $this->landmarks->add($landmark);
             $landmark->setLandmarkType($this);
         }
-
-        return $this;
     }
 
-    public function removeLandmark(Landmark $landmark): static
+    public function removeLandmark(Landmark $landmark)
     {
         if ($this->landmarks->removeElement($landmark)) {
-            // set the owning side to null (unless already changed)
             if ($landmark->getLandmarkType() === $this) {
                 $landmark->setLandmarkType(null);
             }
         }
-
-        return $this;
     }
 }
