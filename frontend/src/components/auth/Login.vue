@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import useApiPost from "@/composables/api/useApiPost";
 import useApiRoutes from "@/composables/api/useApiRoutes";
-import { setAxiosAuth } from "@/composables/axiosInstance";
 import Card from "primevue/card";
 import InputText from "primevue/inputtext";
 import Password from "primevue/password";
@@ -23,7 +22,6 @@ const { post, isLoading } = useApiPost(toast);
 const login = () => post(loginApi, { username: username.value, password: password.value })
     .then((response) => {
         authStore.setToken(response.data.token);
-        setAxiosAuth(response.data.token);
         router.push({ name: "routes" });
     });
 </script>

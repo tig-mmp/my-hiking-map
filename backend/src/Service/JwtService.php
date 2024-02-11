@@ -21,7 +21,7 @@ class JwtService
         $this->publicKey = file_get_contents("$projectDir/config/jwt/public.pem");
     }
 
-    public function generateToken(array $data, int $expiration = 3600)
+    public function generateToken(array $data, int $expiration = 60 * 60 * 24): string
     {
         $issuedAt = time();
         $expire = $issuedAt + $expiration;

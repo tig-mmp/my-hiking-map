@@ -1,3 +1,4 @@
+import { setAxiosAuth } from "@/composables/axiosInstance";
 import { defineStore } from "pinia";
 
 interface UserAuth {
@@ -36,6 +37,7 @@ export const useAuthStore = defineStore("auth", {
       const decodedToken = parseJwt(token);
       if ("data" in decodedToken) {
         this.user = decodedToken.data;
+        setAxiosAuth(token);
       }
     },
     logout: function () {

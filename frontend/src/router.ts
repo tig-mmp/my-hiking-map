@@ -8,6 +8,7 @@ import {
 
 const login = () => import("@/components/auth/Login.vue");
 const listRoutes = () => import("@/components/ListRoutes.vue");
+const listUsers = () => import("@/components/users/ListUsers.vue");
 
 import { getAxiosAuth } from "@/composables/axiosInstance";
 import { useAuthStore } from "@/stores/auth";
@@ -24,6 +25,12 @@ const routes: RouteRecordRaw[] = [
     component: listRoutes,
     meta: { admin: true },
   },
+  {
+    path: "/users",
+    name: "users",
+    component: listUsers,
+    meta: { admin: true },
+  },
 ];
 
 const router = createRouter({
@@ -38,7 +45,8 @@ router.beforeEach(
     next: NavigationGuardNext
   ) => {
     const authStore = useAuthStore();
-    if (!!authStore.isAuthenticated && localStorage.getItem("jwtToken")) {
+
+    if (!authStore.isAuthenticated && !!localStorage.getItem("jwtToken")) {
       authStore.setTokenFromLocalStorage();
     }
     if (
@@ -52,6 +60,7 @@ router.beforeEach(
     if (to.name === "login" && authStore.isAuthenticated) {
       return next({ name: "routes" });
     }
+
     next();
   }
 );
