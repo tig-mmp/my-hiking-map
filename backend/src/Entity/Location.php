@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\Track;
+use App\Entity\TrackLocation;
 use App\Repository\LocationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -35,7 +36,7 @@ class Location
     #[OneToMany(mappedBy: "startLocation", targetEntity: Track::class)]
     private Collection $tracks;
 
-    #[OneToMany(mappedBy: 'location', targetEntity: TrackLocation::class)]
+    #[OneToMany(mappedBy: "location", targetEntity: TrackLocation::class)]
     private Collection $trackLocations;
 
     public function __construct()
