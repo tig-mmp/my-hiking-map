@@ -19,25 +19,25 @@ class UsersController extends AbstractController
     public $MIDDLEWARE = "jwt";
 
     #[Route("/api/users", name: "list-users", methods: ["GET"])]
-    public function listUsers(UserRepository $userRep): JsonResponse
+    public function listUsers(Request $request, UserRepository $userRep): JsonResponse
     {
         $users = $userRep->findAll();
-        $usersFormatted = [];
+        $usersSerialized = [];
         foreach ($users as $user) {
-            $usersFormatted[] = $user->serialize();
+            $usersSerialized[] = $this->serialize($user, $request->query->get("dataType"));
         }
-        return $this->json(["data" => $usersFormatted]);
+        return $this->json(["data" => $usersSerialized]);
     }
 
     #[Route("/api/users/{id<\d+>}", name: "find-user", methods: ["GET"])]
-    public function findUser(int $id, UserRepository $userRep): JsonResponse
+    public function findUser(int $id, Request $request, UserRepository $userRep): JsonResponse
     {
         $user = $userRep->findOneBy(["id" => $id]);
         if (!$user) {
             return $this->json([Response::HTTP_NOT_FOUND, "user_not_found"]);
         }
-        $userFormatted = $user->serialize();
-        return $this->json(["data" => $userFormatted]);
+        $userSerialized = $this->serialize($user, $request->query->get("dataType"));
+        return $this->json(["data" => $userSerialized]);
     }
 
     #[Route("/api/users", name: "create-user", methods: ["POST"])]
@@ -81,5 +81,15 @@ class UsersController extends AbstractController
             $hashedPassword = $passwordHasher->hashPassword($user, $parameters->getPassword());
             $user->setPassword($hashedPassword);
         }
+    }
+
+    private function serialize(User $user, string $dataType): ?array
+    {
+        if ($dataType === "list") {
+            return $user->serializeList();
+        } elseif ($dataType === "form") {
+            return $user->serializeForm();
+        }
+        return null;
     }
 }

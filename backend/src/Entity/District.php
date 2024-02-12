@@ -31,6 +31,30 @@ class District
         $this->counties = new ArrayCollection();
     }
 
+    public function serializeList(): array
+    {
+        return ["id" => $this->id, "name" => $this->name];
+    }
+
+    public function serializeForm(): array
+    {
+        return ["name" => $this->name];
+    }
+
+    public function serializeShort(): array
+    {
+        return ["id" => $this->id, "name" => $this->name, "counties" => $this->getCountiesShort()];
+    }
+
+    private function getCountiesShort(): array
+    {
+        $counties = [];
+        foreach ($this->counties as $county) {
+            $counties[] = $county->serializeShort();
+        }
+        return $counties;
+    }
+
     public function getId(): ?int
     {
         return $this->id;

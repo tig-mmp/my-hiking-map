@@ -45,6 +45,21 @@ class Location
         $this->trackLocations = new ArrayCollection();
     }
 
+    public function serializeList(): array
+    {
+        return ["id" => $this->id, "name" => $this->name, "countyName" => $this->county->getName()];
+    }
+
+    public function serializeForm(): array
+    {
+        return ["name" => $this->name, "countyId" => $this->countyId];
+    }
+
+    public function serializeShort(): array
+    {
+        return ["id" => $this->id, "name" => $this->name];
+    }
+
     public function getId(): ?int
     {
         return $this->id;

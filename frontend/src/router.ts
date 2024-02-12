@@ -9,6 +9,7 @@ import {
 const login = () => import("@/components/auth/Login.vue");
 const listRoutes = () => import("@/components/ListRoutes.vue");
 const listUsers = () => import("@/components/users/ListUsers.vue");
+const listTracks = () => import("@/components/tracks/ListTracks.vue");
 
 import { getAxiosAuth } from "@/composables/axiosInstance";
 import { useAuthStore } from "@/stores/auth";
@@ -29,6 +30,12 @@ const routes: RouteRecordRaw[] = [
     path: "/users",
     name: "users",
     component: listUsers,
+    meta: { admin: true },
+  },
+  {
+    path: "/tracks",
+    name: "tracks",
+    component: listTracks,
     meta: { admin: true },
   },
 ];
