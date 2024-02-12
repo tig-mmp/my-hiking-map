@@ -128,7 +128,7 @@ import { useToast } from "primevue/usetoast";
 import useApiGet from "@/composables/api/useApiGet";
 import useApiPut from "@/composables/api/useApiPut";
 import useApiPost from "@/composables/api/useApiPost";
-import { DistrictShort, districtShortDataType } from "@/models/locatinos/district/short";
+import { DistrictShort, districtShortDataType } from "@/models/locations/district/short";
 import Dropdown from "primevue/dropdown";
 import Textarea from "primevue/textarea";
 import InputNumber from "primevue/inputnumber";
