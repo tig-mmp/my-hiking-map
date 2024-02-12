@@ -31,9 +31,14 @@ class User implements PasswordAuthenticatedUserInterface
         return $this->id;
     }
 
-    public function serialize(): array
+    public function serializeList(): array
     {
         return ["id" => $this->id, "username" => $this->username, "role" => $this->role];
+    }
+
+    public function serializeForm(): array
+    {
+        return ["username" => $this->username, "role" => $this->role];
     }
 
     public function getUsername(): ?string

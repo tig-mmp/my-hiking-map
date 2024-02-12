@@ -43,6 +43,30 @@ class County
         $this->locations = new ArrayCollection();
     }
 
+    public function serializeList(): array
+    {
+        return ["id" => $this->id, "name" => $this->name, "districtId" => $this->districtId];
+    }
+
+    public function serializeForm(): array
+    {
+        return ["name" => $this->name, "districtId" => $this->districtId];
+    }
+
+    public function serializeShort(): array
+    {
+        return ["id" => $this->id, "name" => $this->name, "locations" => $this->getLocationsShort()];
+    }
+
+    private function getLocationsShort(): array
+    {
+        $locations = [];
+        foreach ($this->locations as $location) {
+            $locations[] = $location->serializeShort();
+        }
+        return $locations;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
