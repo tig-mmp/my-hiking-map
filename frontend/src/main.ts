@@ -8,9 +8,15 @@ import { createPinia } from "pinia";
 import router from "@/router";
 import PrimeVue from "primevue/config";
 import App from "@/App.vue";
+import dayjs from "dayjs";
 
 const pinia = createPinia();
 const app = createApp(App);
+
+import weekOfYear from "dayjs/plugin/weekOfYear";
+dayjs.extend(weekOfYear);
+import duration from "dayjs/plugin/duration";
+dayjs.extend(duration);
 
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";

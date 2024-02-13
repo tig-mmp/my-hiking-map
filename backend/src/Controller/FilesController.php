@@ -47,15 +47,21 @@ class FilesController extends AbstractController
     #[Route("/api/file", name: "get-file", methods: ["GET"])]
     public function getFile(Request $request): Response
     {
-        $id = $request->query->get("id");
         $url = $request->query->get("url");
         try {
             if (str_starts_with($url, "tmp")) {
-                return $this->file($url);
+                $files = glob($url . ".*");
+                if (!empty($files)) {
+                    $file = $files[0];
+                    return $this->file($file);
+                }
+            } else {
+
+                return $this->file("../$url");
             }
-            return $this->file("../$url");
         } catch (Throwable $th) {
             return $this->json(["msg_code" => $th->getMessage()]);
         }
+        return $this->json([Response::HTTP_NOT_FOUND, "file_not_found"]);
     }
 }

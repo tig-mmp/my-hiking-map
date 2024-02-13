@@ -49,6 +49,10 @@
       <InputNumber v-model="formObject.distance" :minFractionDigits="2" :maxFractionDigits="2" />
     </div>
     <div class="field col-12 md:col-6">
+      <label>Elevação</label>
+      <InputNumber v-model="formObject.slope" :minFractionDigits="2" :maxFractionDigits="2" />
+    </div>
+    <div class="field col-12 md:col-6">
       <label>Código da rota</label>
       <InputText v-model="formObject.routeCode" type="text" />
     </div>
@@ -86,23 +90,23 @@
     </div>
     <div class="field col-12 md:col-6">
       <label>É moita?</label>
-      <InputSwitch v-model="formObject.isMoita" />
+      <InputSwitch v-model="formObject.isMoita" class="flex" />
     </div>
     <div class="field col-12 md:col-6">
       <label>Duração</label>
-      <Calendar v-model="formObject.duration" timeOnly />
+      <Calendar v-model="formObject.duration" timeOnly dateFormat="yy-mm-dd" />
     </div>
     <div class="field col-12 md:col-6">
       <label>Dia</label>
-      <Calendar v-model="formObject.date" />
+      <Calendar v-model="formObject.date" dateFormat="yy-mm-dd" />
     </div>
     <div class="field col-12 md:col-6">
       <label>Hora de começo</label>
-      <Calendar v-model="formObject.startedAt" timeOnly />
+      <Calendar v-model="formObject.startedAt" timeOnly dateFormat="yy-mm-dd" />
     </div>
     <div class="field col-12 md:col-6">
       <label>Hora de finalização</label>
-      <Calendar v-model="formObject.endedAt" timeOnly />
+      <Calendar v-model="formObject.endedAt" timeOnly dateFormat="yy-mm-dd" />
     </div>
 
     <div class="grid sidebar-footer p-2 ml-1">
@@ -134,12 +138,16 @@ import Textarea from "primevue/textarea";
 import InputNumber from "primevue/inputnumber";
 import InputSwitch from "primevue/inputswitch";
 import Calendar from "primevue/calendar";
+import { PointForm } from "@/models/point/form";
+import { LandmarkForm } from "@/models/landmark/form";
+import dayjs from "dayjs";
+import { getDistance } from "geolib";
 
 const props = defineProps<{ id: number | null }>();
 const emit = defineEmits(["changed", "cancel"]);
 
 const toast = useToast();
-const { tracksApi, getTracksApi, uploadApi, districtsApi } = useApiRoutes();
+const { tracksApi, getTracksApi, uploadApi, districtsApi, fileApi } = useApiRoutes();
 
 const fileUploaded: Ref<FileUploaded | null> = ref(null);
 const uploadProgress: Ref<number> = ref(0);
@@ -184,8 +192,128 @@ const cancel = () => {
 };
 
 const setUploadProgress = (event: FileUploadProgressEvent) => uploadProgress.value = event.progress;
-const afterUpload = (request: FileUploadUploadEvent) => formObject.value.url = JSON.parse(request.xhr.response).data[0].url;
+const afterUpload = (request: FileUploadUploadEvent) => {
+  formObject.value.url = JSON.parse(request.xhr.response).data.url;
+  getFile();
+}
 const cancelUpload = (): null => fileUploaded.value = null;
+const { load: loadFile } = useApiGet<string>(toast, "");
+const getFile = () => {
+  if (!formObject.value.url) return;
+  loadFile(fileApi, { "url": formObject.value.url.replace(/\.[^.]+$/, "") })
+    .then((response) => {
+      if (!response || typeof response.data !== "string") return;
+      const gpxDoc = new DOMParser().parseFromString(response.data, "text/xml");
+
+      const url = gpxDoc?.querySelector("metadata link")?.getAttribute("href");
+      if (url) {
+        formObject.value.trackUrl = url;
+      }
+      const name = gpxDoc?.querySelector("metadata name");
+      if (name && name.textContent) {
+        formObject.value.name = name.textContent.replace("Wikiloc - ", "");
+      }
+
+      const landmarks: LandmarkForm[] = [];
+      const wpts = gpxDoc.querySelectorAll("wpt");
+      wpts.forEach(wpt => {
+        const name = wpt.querySelector("name");
+        const ele = wpt.querySelector("ele");
+        const time = wpt.querySelector("time");
+        const lat = wpt.getAttribute("lat");
+        const lon = wpt.getAttribute("lon");
+        if (lon && lat && ele?.textContent && time?.textContent && name?.textContent) {
+          const point: PointForm = {
+            elevation: parseFloat(ele.textContent),
+            latitude: parseFloat(lat),
+            longitude: parseFloat(lon),
+            date: new Date(time.textContent),
+          };
+          const landmark: LandmarkForm = {
+            name: name.textContent,
+            point: point,
+          };
+          landmarks.push(landmark);
+        }
+      });
+      formObject.value.landmarks = landmarks;
+
+      const moitaCoordinates = { latitude: 39.64957895555594, longitude: -8.667871756075451 };
+      const nearDistance = 50;
+      const points: PointForm[] = [];
+      const trkpts = gpxDoc.querySelectorAll("trkpt");
+      trkpts.forEach(trkpt => {
+        const ele = trkpt.querySelector("ele");
+        const time = trkpt.querySelector("time");
+        const lat = trkpt.getAttribute("lat");
+        const lon = trkpt.getAttribute("lon");
+        if (lon && lat && ele?.textContent && time?.textContent) {
+          const latitude = parseFloat(lat);
+          const longitude = parseFloat(lon);
+          const point: PointForm = {
+            elevation: parseFloat(ele.textContent),
+            latitude: latitude,
+            longitude: longitude,
+            date: new Date(time.textContent),
+          };
+          points.push(point);
+          if (!formObject.value.isMoita) {
+            formObject.value.isMoita = getDistance({ latitude: latitude, longitude: longitude }, moitaCoordinates) <= nearDistance;
+          }
+        }
+      });
+
+      const [first, ...rest] = points;
+      const lastPoint = rest.pop();
+      if (!lastPoint) {
+        return;
+      }
+      const firstDate = dayjs(first.date);
+      const lastDate = dayjs(lastPoint.date);
+
+      const duration = dayjs.duration(lastDate.diff(firstDate));
+      formObject.value.duration = duration.format("HH:mm");
+
+      formObject.value.date = firstDate.toDate();
+      formObject.value.weekNumber = dayjs(firstDate).week();
+      formObject.value.startedAt = firstDate.format("HH:mm");
+      formObject.value.endedAt = lastDate.format("HH:mm");
+
+      let totalDistance = 0;
+      let totalSlope = 0;
+      let pointA: PointForm | null = null;
+      points.forEach(pointB => {
+        if (!pointA) {
+          pointA = pointB;
+        } else {
+          totalDistance += haversineDistance(pointA, pointB);
+          totalSlope += Number(Math.abs(pointA.elevation - pointB.elevation).toFixed(3));
+          pointA = pointB;
+        }
+      });
+      formObject.value.distance = totalDistance;
+      formObject.value.slope = Number(totalSlope.toFixed(3));
+    });
+};
+
+const haversineDistance = (coord1: PointForm, coord2: PointForm) => {
+  function toRadians(degrees: number) {
+    return degrees * Math.PI / 180;
+  }
+  const R = 6371;
+  const lat1 = toRadians(coord1.latitude);
+  const lon1 = toRadians(coord1.longitude);
+  const lat2 = toRadians(coord2.latitude);
+  const lon2 = toRadians(coord2.longitude);
+  const dLat = lat2 - lat1;
+  const dLon = lon2 - lon1;
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1) * Math.cos(lat2) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distance = R * c * 1000;
+  return distance;
+}
 
 const { load: loadDistricts, data: districts } = useApiGet<DistrictShort[]>(toast, []);
 const getDistricts = () => loadDistricts(districtsApi, { dataType: districtShortDataType });
