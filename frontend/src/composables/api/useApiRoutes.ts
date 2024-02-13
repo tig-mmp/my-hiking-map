@@ -4,6 +4,8 @@ export function useApiRoutes() {
   const { API } = useEnvironment();
 
   const uploadApi = API + "upload";
+  const fileApi = API + "file";
+
   const loginApi = API + "login";
   const usersApi = API + "users";
   const tracksApi = API + "tracks";
@@ -14,6 +16,7 @@ export function useApiRoutes() {
 
   return {
     uploadApi,
+    fileApi,
     loginApi,
     usersApi,
     tracksApi,

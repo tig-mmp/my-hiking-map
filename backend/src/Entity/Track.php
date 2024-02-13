@@ -41,6 +41,9 @@ class Track
     #[Column(nullable: true)]
     private ?float $distance = null;
 
+    #[Column(nullable: true)]
+    private ?float $slope = null;
+
     #[Column(length: 20, nullable: true)]
     private ?string $routeCode = null;
 
@@ -167,6 +170,16 @@ class Track
     public function setDistance(?float $distance)
     {
         $this->distance = $distance;
+    }
+
+    public function getSlope(): ?float
+    {
+        return $this->slope;
+    }
+
+    public function setSlope(?float $slope)
+    {
+        $this->slope = $slope;
     }
 
     public function getRouteCode(): ?string

@@ -1,3 +1,5 @@
+import { LandmarkForm } from "@/models/landmark/form";
+
 export interface TrackForm {
   name?: string;
   url?: string;
@@ -6,6 +8,7 @@ export interface TrackForm {
   startLocationId?: number;
   description?: string;
   distance?: number;
+  slope?: number;
   routeCode?: string;
   difficulty?: number;
   landscape?: number;
@@ -20,6 +23,7 @@ export interface TrackForm {
   date?: Date;
   startedAt?: string;
   endedAt?: string;
+  landmarks?: LandmarkForm[];
 }
 
 const trackFormDataType = "form";
