@@ -5,9 +5,9 @@ export interface TrackForm {
   id?: number;
   name?: string;
   fileUrl?: string;
-  startDistrictId?: number;
-  startCountyId?: number;
-  startLocationId?: number;
+  startDistrictId?: number | string;
+  startCountyId?: number | string;
+  startLocationId?: number | string;
   description?: string;
   distance?: number;
   slope?: number;
