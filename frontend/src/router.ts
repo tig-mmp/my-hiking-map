@@ -53,18 +53,13 @@ router.beforeEach(
   ) => {
     const authStore = useAuthStore();
 
-    if (!authStore.isAuthenticated && !!localStorage.getItem("jwtToken")) {
+    if (!authStore.user && !!localStorage.getItem("jwtToken")) {
       authStore.setTokenFromLocalStorage();
     }
-    if (
-      to.meta &&
-      to.meta.admin &&
-      !getAxiosAuth() &&
-      !authStore.isAuthenticated
-    ) {
+    if (to.meta && to.meta.admin && !getAxiosAuth() && !authStore.user) {
       return next({ name: "login" });
     }
-    if (to.name === "login" && authStore.isAuthenticated) {
+    if (to.name === "login" && authStore.user) {
       return next({ name: "routes" });
     }
 
