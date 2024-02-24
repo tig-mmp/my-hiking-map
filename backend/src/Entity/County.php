@@ -38,9 +38,11 @@ class County
     #[OneToMany(mappedBy: "county", targetEntity: Location::class, orphanRemoval: true)]
     private Collection $locations;
 
-    public function __construct()
+    public function __construct(string $name, District $district)
     {
         $this->locations = new ArrayCollection();
+        $this->name = $name;
+        $this->setDistrict($district);
     }
 
     public function serializeList(): array
