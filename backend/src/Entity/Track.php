@@ -6,6 +6,7 @@ use App\Entity\Landmark;
 use App\Entity\Point;
 use App\Entity\TrackLocation;
 use App\Repository\TrackRepository;
+use DateTime;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -74,17 +75,17 @@ class Track
     #[Column]
     private ?bool $isMoita = false;
 
-    #[Column(type: Types::TIME_MUTABLE, nullable: true)]
-    private ?DateTimeInterface $duration = null;
+    #[Column(length: 6, nullable: true)]
+    private ?string $duration = null;
 
     #[Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?DateTimeInterface $date = null;
 
-    #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?DateTimeInterface $startedAt = null;
+    #[Column(length: 6, nullable: true)]
+    private ?string $startTime = null;
 
-    #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?DateTimeInterface $endedAt = null;
+    #[Column(length: 6, nullable: true)]
+    private ?string $endTime = null;
 
     #[Column(type: Types::DATETIME_MUTABLE)]
     private ?DateTimeInterface $createdAt = null;
@@ -115,6 +116,8 @@ class Track
         $this->trackLocations = new ArrayCollection();
         $this->landmarks = new ArrayCollection();
         $this->points = new ArrayCollection();
+        $this->createdAt = new DateTime();
+        $this->updatedAt = new DateTime();
     }
 
     public function getId(): ?int
@@ -282,12 +285,12 @@ class Track
         $this->isMoita = $isMoita;
     }
 
-    public function getDuration(): ?DateTimeInterface
+    public function getDuration(): ?string
     {
         return $this->duration;
     }
 
-    public function setDuration(?DateTimeInterface $duration)
+    public function setDuration(?string $duration)
     {
         $this->duration = $duration;
     }
@@ -302,24 +305,24 @@ class Track
         $this->date = $date;
     }
 
-    public function getStartedAt(): ?DateTimeInterface
+    public function getStartTime(): ?string
     {
-        return $this->startedAt;
+        return $this->startTime;
     }
 
-    public function setStartedAt(?DateTimeInterface $startedAt)
+    public function setStartTime(?string $startTime)
     {
-        $this->startedAt = $startedAt;
+        $this->startTime = $startTime;
     }
 
-    public function getEndedAt(): ?DateTimeInterface
+    public function getEndTime(): ?string
     {
-        return $this->endedAt;
+        return $this->endTime;
     }
 
-    public function setEndedAt(?DateTimeInterface $endedAt)
+    public function setEndTime(?string $endTime)
     {
-        $this->endedAt = $endedAt;
+        $this->endTime = $endTime;
     }
 
     public function getCreatedAt(): ?DateTimeInterface

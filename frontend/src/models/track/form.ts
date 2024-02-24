@@ -1,8 +1,9 @@
 import { LandmarkForm } from "@/models/landmark/form";
 
 export interface TrackForm {
+  id?: number;
   name?: string;
-  url?: string;
+  fileUrl?: string;
   startDistrictId?: number;
   startCountyId?: number;
   startLocationId?: number;
@@ -21,8 +22,8 @@ export interface TrackForm {
   isMoita?: boolean;
   duration?: string;
   date?: Date;
-  startedAt?: string;
-  endedAt?: string;
+  startTime?: string;
+  endTime?: string;
   landmarks?: LandmarkForm[];
 }
 
