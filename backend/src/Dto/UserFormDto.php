@@ -6,9 +6,9 @@ use App\Utils\DtoUtils;
 
 class UserFormDto
 {
-    private $role;
-    private $username;
-    private $password;
+    private ?string $role;
+    private ?string $username;
+    private ?string $password;
 
     public function __construct(array $parameters)
     {
