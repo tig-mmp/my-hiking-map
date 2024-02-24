@@ -23,3 +23,5 @@ services:
   App\Service\JwtService:
     arguments:
       $passPhrase: "%env(JWT_PASS_PHRASE)%"
+  App\EventListener\ExceptionListener:
+      tags: [kernel.event_listener]
