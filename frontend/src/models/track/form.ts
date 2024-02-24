@@ -1,4 +1,5 @@
 import { LandmarkForm } from "@/models/landmark/form";
+import { PointForm } from "@/models/point/form";
 
 export interface TrackForm {
   id?: number;
@@ -25,6 +26,7 @@ export interface TrackForm {
   startTime?: string;
   endTime?: string;
   landmarks?: LandmarkForm[];
+  points?: PointForm[];
 }
 
 const trackFormDataType = "form";

@@ -152,6 +152,8 @@ const { tracksApi, getTracksApi, uploadApi, districtsApi, fileApi } = useApiRout
 const fileUploaded: Ref<FileUploaded | null> = ref(null);
 const uploadProgress: Ref<number> = ref(0);
 
+let didReset = false;
+
 const header = computed(() => `${!props.id ? "Criar" : "Editar"} trilho`);
 const submitLabel = computed(() => !props.id ? "Criar" : "Guardar");
 const startCounties = computed(() => formObject.value.startDistrictId && !!districts.value ? districts.value.find(d => formObject.value.startDistrictId === d.id)?.states : []);
@@ -204,96 +206,151 @@ const getFile = () => {
     .then((response) => {
       if (!response || typeof response.data !== "string") return;
       const gpxDoc = new DOMParser().parseFromString(response.data, "text/xml");
-
-      const url = gpxDoc?.querySelector("metadata link")?.getAttribute("href");
-      if (url) {
-        formObject.value.trackUrl = url;
-      }
-      const name = gpxDoc?.querySelector("metadata name");
-      if (name && name.textContent) {
-        formObject.value.name = name.textContent.replace("Wikiloc - ", "");
-      }
-
-      const landmarks: LandmarkForm[] = [];
-      const wpts = gpxDoc.querySelectorAll("wpt");
-      wpts.forEach(wpt => {
-        const name = wpt.querySelector("name");
-        const ele = wpt.querySelector("ele");
-        const time = wpt.querySelector("time");
-        const lat = wpt.getAttribute("lat");
-        const lon = wpt.getAttribute("lon");
-        if (lon && lat && ele?.textContent && time?.textContent && name?.textContent) {
-          const point: PointForm = {
-            elevation: parseFloat(ele.textContent),
-            latitude: parseFloat(lat),
-            longitude: parseFloat(lon),
-            date: new Date(time.textContent),
-          };
-          const landmark: LandmarkForm = {
-            name: name.textContent,
-            point: point,
-          };
-          landmarks.push(landmark);
-        }
-      });
-      formObject.value.landmarks = landmarks;
-
-      const moitaCoordinates = { latitude: 39.64957895555594, longitude: -8.667871756075451 };
-      const nearDistance = 50;
-      const points: PointForm[] = [];
-      const trkpts = gpxDoc.querySelectorAll("trkpt");
-      trkpts.forEach(trkpt => {
-        const ele = trkpt.querySelector("ele");
-        const time = trkpt.querySelector("time");
-        const lat = trkpt.getAttribute("lat");
-        const lon = trkpt.getAttribute("lon");
-        if (lon && lat && ele?.textContent && time?.textContent) {
-          const latitude = parseFloat(lat);
-          const longitude = parseFloat(lon);
-          const point: PointForm = {
-            elevation: parseFloat(ele.textContent),
-            latitude: latitude,
-            longitude: longitude,
-            date: new Date(time.textContent),
-          };
-          points.push(point);
-          if (!formObject.value.isMoita) {
-            formObject.value.isMoita = getDistance({ latitude: latitude, longitude: longitude }, moitaCoordinates) <= nearDistance;
-          }
-        }
-      });
-
-      const [first, ...rest] = points;
-      const lastPoint = rest.pop();
-      if (!lastPoint) {
+      if (!gpxDoc) {
         return;
       }
-      const firstDate = dayjs(first.date);
-      const lastDate = dayjs(lastPoint.date);
-
-      const duration = dayjs.duration(lastDate.diff(firstDate));
-      formObject.value.duration = duration.format("HH:mm");
-
-      formObject.value.date = firstDate.toDate();
-      formObject.value.weekNumber = dayjs(firstDate).week();
-      formObject.value.startTime = firstDate.format("HH:mm");
-      formObject.value.endTime = lastDate.format("HH:mm");
-
-      let totalDistance = 0;
-      let totalSlope = 0;
-      let pointA: PointForm | null = null;
-      points.forEach(pointB => {
-        if (!pointA) {
-          pointA = pointB;
-        } else {
-          totalDistance += haversineDistance(pointA, pointB);
-          totalSlope += Number(Math.abs(pointA.elevation - pointB.elevation).toFixed(3));
-          pointA = pointB;
-        }
-      });
-      formObject.value.distance = totalDistance;
-      formObject.value.slope = Number(totalSlope.toFixed(3));
+      getDataFromDocument(gpxDoc);
     });
+};
+const getDataFromDocument = (gpxDoc: Document) => {
+  setUrl(gpxDoc);
+  setName(gpxDoc);
+
+  formObject.value.points = [];
+  let previousDate: Date | null = null;
+  const trkpts = gpxDoc.querySelectorAll("trkpt");
+  for (const trkpt of trkpts) {
+    const point = setPoint(trkpt);
+    if (!point || !formObject.value.points) {
+      continue;
+    }
+    setIsMoita(point);
+    if (setReset(previousDate, point.date)) {
+      break;
+    }
+    formObject.value.points.push(point);
+    previousDate = point.date;
+  }
+
+  if (!formObject.value.isMoita) {
+    setLandmarks(gpxDoc);
+  }
+  setDateTimes();
+  setDistances();
+}
+
+const setUrl = (gpxDoc: Document) => {
+  const linkElement = gpxDoc.querySelector("link[href*=\"walking-trails\"]");
+  if (linkElement) {
+    const url = linkElement.getAttribute("href");
+    if (url) {
+      const parts = url.split("/");
+      const lastPart = parts[parts.length - 1];
+      const wikilocId = lastPart.match(/\d+/);
+      formObject.value.trackUrl = url.replace(lastPart, `--${wikilocId}`);
+    }
+  }
+};
+const setName = (gpxDoc: Document) => {
+  const name = gpxDoc.querySelector("metadata name");
+  if (name?.textContent) {
+    formObject.value.name = name.textContent.replace("Wikiloc - ", "");
+  }
+};
+const setPoint = (trkpt: Element): PointForm | null => {
+  const ele = trkpt.querySelector("ele");
+  const time = trkpt.querySelector("time");
+  const lat = trkpt.getAttribute("lat");
+  const lon = trkpt.getAttribute("lon");
+  if (lon && lat && ele?.textContent && time?.textContent) {
+    const latitude = parseFloat(lat);
+    const longitude = parseFloat(lon);
+    return {
+      elevation: parseFloat(ele.textContent),
+      latitude: latitude,
+      longitude: longitude,
+      date: new Date(time.textContent),
+    };
+  }
+  return null;
+};
+const setIsMoita = (point: PointForm) => {
+  const moitaCoordinates = { latitude: 39.64957895555594, longitude: -8.667871756075451 };
+  const nearDistance = 50;
+  if (!formObject.value.isMoita) {
+    formObject.value.isMoita = getDistance({ latitude: point.latitude, longitude: point.longitude }, moitaCoordinates) <= nearDistance;
+  }
+};
+const setReset = (previousDate: Date | null, date: Date): boolean => {
+  if (formObject.value.isMoita && previousDate && (date.getTime() - previousDate.getTime()) > (3 * 60 * 60 * 1000)) {
+    if (didReset) {
+      return true;
+    }
+    formObject.value.points = [];
+    didReset = true;
+  }
+  return false;
+};
+const setLandmarks = (gpxDoc: Document) => {
+  formObject.value.landmarks = [];
+  const wpts = gpxDoc.querySelectorAll("wpt");
+  if (wpts) {
+    wpts.forEach(wpt => {
+      setLandmark(wpt);
+    });
+  }
+};
+const setLandmark = (wpt: Element) => {
+  const point = setPoint(wpt);
+  if (point) {
+    const name = wpt.querySelector("name");
+    if (name && name.textContent) {
+      const landmark: LandmarkForm = {
+        name: name.textContent,
+        point: point,
+      };
+      formObject.value.landmarks?.push(landmark);
+    }
+  }
+};
+const setDateTimes = () => {
+  if (!formObject.value.points) {
+    return;
+  }
+  const [first, ...rest] = formObject.value.points;
+  const lastPoint = rest.pop();
+  if (!lastPoint) {
+    return;
+  }
+  const firstDate = dayjs(first.date);
+  const lastDate = dayjs(lastPoint.date);
+
+  const duration = dayjs.duration(lastDate.diff(firstDate));
+  formObject.value.duration = duration.format("HH:mm");
+
+  formObject.value.date = firstDate.toDate();
+  formObject.value.weekNumber = dayjs(firstDate).week();
+  formObject.value.startTime = firstDate.format("HH:mm");
+  formObject.value.endTime = lastDate.format("HH:mm");
+};
+const setDistances = () => {
+  if (!formObject.value.points) {
+    return;
+  }
+  let totalDistance = 0;
+  let totalSlope = 0;
+  let pointA: PointForm | null = null;
+  formObject.value.points.forEach(pointB => {
+    if (!pointA) {
+      pointA = pointB;
+    } else {
+      totalDistance += haversineDistance(pointA, pointB);
+      totalSlope += Number(Math.abs(pointA.elevation - pointB.elevation).toFixed(3));
+      pointA = pointB;
+    }
+  });
+  formObject.value.distance = totalDistance;
+  formObject.value.slope = Number((totalSlope / 2).toFixed(3));
 };
 
 const haversineDistance = (coord1: PointForm, coord2: PointForm) => {
