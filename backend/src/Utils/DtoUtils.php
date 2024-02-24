@@ -48,7 +48,7 @@ class DtoUtils
 
     public static function getSerializeArray(array $parameters, string $key): ?string
     {
-        $value = RequestUtils::getArray($parameters, $key);
+        $value = DtoUtils::getArray($parameters, $key);
         if ($value) {
             return serialize($value);
         }
@@ -57,7 +57,7 @@ class DtoUtils
 
     public static function getSerializeArrayValues(array $parameters, string $key): ?string
     {
-        $value = RequestUtils::getArray($parameters, $key);
+        $value = DtoUtils::getArray($parameters, $key);
         if ($value) {
             return serialize(array_values($value));
         }
@@ -71,7 +71,7 @@ class DtoUtils
 
     public static function getArrayOrNull(array $parameters, string $key): ?array
     {
-        $value = RequestUtils::getArray($parameters, $key);
+        $value = DtoUtils::getArray($parameters, $key);
         return count($value) === 0 ? $value : null;
     }
 }
