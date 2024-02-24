@@ -102,11 +102,11 @@
     </div>
     <div class="field col-12 md:col-6">
       <label>Hora de começo</label>
-      <Calendar v-model="formObject.startedAt" timeOnly dateFormat="yy-mm-dd" />
+      <Calendar v-model="formObject.startTime" timeOnly dateFormat="yy-mm-dd" />
     </div>
     <div class="field col-12 md:col-6">
       <label>Hora de finalização</label>
-      <Calendar v-model="formObject.endedAt" timeOnly dateFormat="yy-mm-dd" />
+      <Calendar v-model="formObject.endTime" timeOnly dateFormat="yy-mm-dd" />
     </div>
 
     <div class="grid sidebar-footer p-2 ml-1">
@@ -193,14 +193,14 @@ const cancel = () => {
 
 const setUploadProgress = (event: FileUploadProgressEvent) => uploadProgress.value = event.progress;
 const afterUpload = (request: FileUploadUploadEvent) => {
-  formObject.value.url = JSON.parse(request.xhr.response).data.url;
+  formObject.value.fileUrl = JSON.parse(request.xhr.response).data.url;
   getFile();
 }
 const cancelUpload = (): null => fileUploaded.value = null;
 const { load: loadFile } = useApiGet<string>(toast, "");
 const getFile = () => {
-  if (!formObject.value.url) return;
-  loadFile(fileApi, { "url": formObject.value.url.replace(/\.[^.]+$/, "") })
+  if (!formObject.value.fileUrl) return;
+  loadFile(fileApi, { "url": formObject.value.fileUrl.replace(/\.[^.]+$/, "") })
     .then((response) => {
       if (!response || typeof response.data !== "string") return;
       const gpxDoc = new DOMParser().parseFromString(response.data, "text/xml");
@@ -276,8 +276,8 @@ const getFile = () => {
 
       formObject.value.date = firstDate.toDate();
       formObject.value.weekNumber = dayjs(firstDate).week();
-      formObject.value.startedAt = firstDate.format("HH:mm");
-      formObject.value.endedAt = lastDate.format("HH:mm");
+      formObject.value.startTime = firstDate.format("HH:mm");
+      formObject.value.endTime = lastDate.format("HH:mm");
 
       let totalDistance = 0;
       let totalSlope = 0;
