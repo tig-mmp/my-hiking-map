@@ -59,38 +59,6 @@ CREATE TABLE `location` (
   CONSTRAINT `location_county_FK` FOREIGN KEY (`county_id`) REFERENCES `county` (`id`) ON UPDATE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
--- my_hiking_map.landmark definition
-CREATE TABLE `landmark` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `landmark_type_id` int DEFAULT NULL,
-  `track_id` int DEFAULT NULL,
-  `file_id` int DEFAULT NULL,
-  `point_id` int DEFAULT NULL,
-  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `landmark_file_FK` (`file_id`),
-  KEY `landmark_track_FK` (`track_id`),
-  KEY `landmark_landmark_type_FK` (`landmark_type_id`),
-  KEY `landmark_point_FK` (`point_id`),
-  CONSTRAINT `landmark_file_FK` FOREIGN KEY (`file_id`) REFERENCES `file` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `landmark_landmark_type_FK` FOREIGN KEY (`landmark_type_id`) REFERENCES `landmark_type` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `landmark_point_FK` FOREIGN KEY (`point_id`) REFERENCES `point` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `landmark_track_FK` FOREIGN KEY (`track_id`) REFERENCES `track` (`id`) ON UPDATE CASCADE
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
-
--- my_hiking_map.`point` definition
-CREATE TABLE `point` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `track_id` int DEFAULT NULL,
-  `elevation` float NOT NULL,
-  `latitude` float NOT NULL,
-  `longitude` float NOT NULL,
-  `date` datetime NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `point_track_FK` (`track_id`),
-  CONSTRAINT `point_track_FK` FOREIGN KEY (`track_id`) REFERENCES `track` (`id`) ON UPDATE CASCADE
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
-
 -- my_hiking_map.track definition
 CREATE TABLE `track` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -118,10 +86,12 @@ CREATE TABLE `track` (
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `track_track_location_FK` (`start_location_id`),
   KEY `track_file_FK` (`file_id`),
+  KEY `track_location_FK` (`start_location_id`),
   CONSTRAINT `track_file_FK` FOREIGN KEY (`file_id`) REFERENCES `file` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `track_track_location_FK` FOREIGN KEY (`start_location_id`) REFERENCES `track_location` (`id`) ON UPDATE CASCADE
+  CONSTRAINT `track_location_FK` FOREIGN KEY (`start_location_id`) REFERENCES `location` (`id`) ON DELETE
+  SET
+    NULL ON UPDATE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 -- my_hiking_map.track_location definition
@@ -134,4 +104,36 @@ CREATE TABLE `track_location` (
   KEY `track_location_location_FK` (`location_id`),
   CONSTRAINT `track_location_location_FK` FOREIGN KEY (`location_id`) REFERENCES `location` (`id`) ON UPDATE CASCADE,
   CONSTRAINT `track_location_track_FK` FOREIGN KEY (`track_id`) REFERENCES `track` (`id`) ON UPDATE CASCADE
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- my_hiking_map.`point` definition
+CREATE TABLE `point` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `track_id` int DEFAULT NULL,
+  `elevation` float NOT NULL,
+  `latitude` float NOT NULL,
+  `longitude` float NOT NULL,
+  `date` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `point_track_FK` (`track_id`),
+  CONSTRAINT `point_track_FK` FOREIGN KEY (`track_id`) REFERENCES `track` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- my_hiking_map.landmark definition
+CREATE TABLE `landmark` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `landmark_type_id` int DEFAULT NULL,
+  `track_id` int DEFAULT NULL,
+  `file_id` int DEFAULT NULL,
+  `point_id` int DEFAULT NULL,
+  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `landmark_file_FK` (`file_id`),
+  KEY `landmark_track_FK` (`track_id`),
+  KEY `landmark_landmark_type_FK` (`landmark_type_id`),
+  KEY `landmark_point_FK` (`point_id`),
+  CONSTRAINT `landmark_file_FK` FOREIGN KEY (`file_id`) REFERENCES `file` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `landmark_landmark_type_FK` FOREIGN KEY (`landmark_type_id`) REFERENCES `landmark_type` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `landmark_point_FK` FOREIGN KEY (`point_id`) REFERENCES `point` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `landmark_track_FK` FOREIGN KEY (`track_id`) REFERENCES `track` (`id`) ON UPDATE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
