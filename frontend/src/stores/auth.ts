@@ -21,9 +21,6 @@ export const useAuthStore = defineStore("auth", {
       user: null,
     };
   },
-  getters: {
-    isAuthenticated: (state) => !!state.user,
-  },
   actions: {
     setTokenFromLocalStorage: function () {
       var token = localStorage.getItem("jwtToken");
@@ -46,6 +43,7 @@ export const useAuthStore = defineStore("auth", {
     },
   },
 });
+
 function parseJwt(token: string): DecodedToken {
   var payload = token.split(".")[1];
   return JSON.parse(atob(payload));
