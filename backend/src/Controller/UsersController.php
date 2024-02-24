@@ -2,9 +2,9 @@
 
 namespace App\Controller;
 
+use App\Dto\UserFormDto;
 use App\Entity\User;
 use App\Repository\UserRepository;
-use App\Requests\Users\User\UserRequest;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -44,7 +44,7 @@ class UsersController extends AbstractController
     public function createUser(EntityManagerInterface $entityManager, Request $request, UserPasswordHasherInterface $passwordHasher): JsonResponse
     {
         $parameters = json_decode($request->getContent(), true);
-        $parameters = new UserRequest($parameters);
+        $parameters = new UserFormDto($parameters);
 
         $user = new User();
         $this->fill($user, $parameters, $passwordHasher);
@@ -65,7 +65,7 @@ class UsersController extends AbstractController
         }
 
         $parameters = json_decode($request->getContent(), true);
-        $parameters = new UserRequest($parameters);
+        $parameters = new UserFormDto($parameters);
 
         $this->fill($user, $parameters, $passwordHasher);
 
@@ -73,7 +73,7 @@ class UsersController extends AbstractController
         return $this->json(["msg_code" => "user_updated"]);
     }
 
-    private function fill(User $user, UserRequest $parameters, UserPasswordHasherInterface $passwordHasher)
+    private function fill(User $user, UserFormDto $parameters, UserPasswordHasherInterface $passwordHasher)
     {
         $user->setUsername($parameters->getUsername());
         $user->setRole($parameters->getRole());

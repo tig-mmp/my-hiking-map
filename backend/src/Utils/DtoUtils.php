@@ -2,7 +2,9 @@
 
 namespace App\Utils;
 
-class RequestUtils
+use DateTime;
+
+class DtoUtils
 {
     public static function getString(array $parameters, string $key): ?string
     {
