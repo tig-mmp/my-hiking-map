@@ -39,10 +39,12 @@ class Location
     #[OneToMany(mappedBy: "location", targetEntity: TrackLocation::class)]
     private Collection $trackLocations;
 
-    public function __construct()
+    public function __construct(string $name, County $county)
     {
         $this->tracks = new ArrayCollection();
         $this->trackLocations = new ArrayCollection();
+        $this->name = $name;
+        $this->setCounty($county);
     }
 
     public function serializeList(): array
