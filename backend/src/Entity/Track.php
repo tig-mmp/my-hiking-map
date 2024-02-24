@@ -120,6 +120,40 @@ class Track
         $this->updatedAt = new DateTime();
     }
 
+    public function serializeList(): array
+    {
+        return [
+            "id" => $this->id,
+            "name" => $this->name,
+        ];
+    }
+
+    public function serializeForm(): array
+    {
+        return [
+            "id" => $this->id,
+            "name" => $this->name,
+            "startLocationId" => $this->startLocationId,
+            "description" => $this->description,
+            "distance" => $this->distance,
+            "slope" => $this->slope,
+            "routeCode" => $this->routeCode,
+            "difficulty" => $this->difficulty,
+            "landscape" => $this->landscape,
+            "enjoyment" => $this->enjoyment,
+            "trackUrl" => $this->trackUrl,
+            "officialUrl" => $this->officialUrl,
+            "groupName" => $this->groupName,
+            "guide" => $this->guide,
+            "weekNumber" => $this->weekNumber,
+            "isMoita" => $this->isMoita,
+            "duration" => $this->duration,
+            "date" => $this->date ? $this->date->format("Y-m-d H:i:s P") : null,
+            "startTime" => $this->startTime,
+            "endTime" => $this->endTime,
+        ];
+    }
+
     public function getId(): ?int
     {
         return $this->id;
