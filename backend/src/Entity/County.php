@@ -110,6 +110,7 @@ class County
     public function setDistrict(?District $district)
     {
         $this->district = $district;
+        $this->districtId = $district ? $district->getId() : null;
     }
 
     /**

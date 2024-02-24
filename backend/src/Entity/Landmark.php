@@ -81,6 +81,7 @@ class Landmark
     public function setLandmarkType(?LandmarkType $landmarkType)
     {
         $this->landmarkType = $landmarkType;
+        $this->landmarkTypeId = $landmarkType ? $landmarkType->getId() : null;
     }
 
     public function getTrackId(): ?int
@@ -101,6 +102,7 @@ class Landmark
     public function setTrack(?Track $track)
     {
         $this->track = $track;
+        $this->trackId = $track ? $track->getId() : null;
     }
 
     public function getPointId(): ?int
@@ -121,6 +123,7 @@ class Landmark
     public function setPoint(?Point $point)
     {
         $this->point = $point;
+        $this->pointId = $point ? $point->getId() : null;
     }
 
     public function getFileId(): ?int
@@ -141,5 +144,6 @@ class Landmark
     public function setFile(?File $file)
     {
         $this->file = $file;
+        $this->fileId = $file ? $file->getId() : null;
     }
 }
