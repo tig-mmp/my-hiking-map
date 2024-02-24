@@ -143,6 +143,7 @@ class Track
     public function setStartLocation(?Location $startLocation)
     {
         $this->startLocation = $startLocation;
+        $this->startLocationId = $startLocation ? $startLocation->getId() : null;
     }
 
     public function getName(): ?string
@@ -448,5 +449,6 @@ class Track
     public function setFile(?File $file)
     {
         $this->file = $file;
+        $this->fileId = $file ? $file->getId() : null;
     }
 }

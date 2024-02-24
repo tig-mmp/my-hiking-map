@@ -74,6 +74,7 @@ class Point
     public function setTrack(?Track $track)
     {
         $this->track = $track;
+        $this->trackId = $track ? $track->getId() : null;
     }
 
     public function getElevation(): ?float

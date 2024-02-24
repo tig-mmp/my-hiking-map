@@ -93,6 +93,7 @@ class Location
     public function setCounty(?County $county)
     {
         $this->county = $county;
+        $this->countyId = $county ? $county->getId() : null;
     }
 
     /**

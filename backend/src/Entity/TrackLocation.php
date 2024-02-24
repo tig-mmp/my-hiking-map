@@ -55,6 +55,7 @@ class TrackLocation
     public function setLocation(?Location $location)
     {
         $this->location = $location;
+        $this->locationId = $location ? $location->getId() : null;
     }
 
     public function getTrackId(): ?int
@@ -75,5 +76,6 @@ class TrackLocation
     public function setTrack(?Track $track)
     {
         $this->track = $track;
+        $this->trackId = $track ? $track->getId() : null;
     }
 }
