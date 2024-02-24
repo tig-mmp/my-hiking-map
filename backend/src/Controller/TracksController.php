@@ -2,12 +2,24 @@
 
 namespace App\Controller;
 
+use App\Dto\TrackFormDto;
+use App\Entity\File;
 use App\Entity\Track;
+use App\Repository\CountyRepository;
+use App\Repository\DistrictRepository;
+use App\Repository\LandmarkRepository;
+use App\Repository\LocationRepository;
+use App\Repository\PointRepository;
 use App\Repository\TrackRepository;
+use App\Utils\LandmarkUtils;
+use App\Utils\LocationUtils;
+use App\Utils\PointUtils;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 class TracksController extends AbstractController
@@ -44,5 +56,103 @@ class TracksController extends AbstractController
             return $track->serializeForm();
         }
         return null;
+    }
+
+    #[Route("/api/tracks", name: "create-track", methods: ["POST"])]
+    public function createTrack(
+        EntityManagerInterface $entityManager, Request $request, LandmarkUtils $landmarkUtils, LocationUtils $locationUtils,
+        PointUtils $pointUtils, LandmarkRepository $landmarkRep, PointRepository $pointRep,
+        DistrictRepository $districtRep, CountyRepository $countyRep, LocationRepository $locationRep
+    ): JsonResponse {
+        $parameters = json_decode($request->getContent(), true);
+        $parameters = new TrackFormDto($parameters);
+
+        $track = new Track();
+        $locationUtils->fillStartLocation($entityManager, $track, $parameters->getStartLocationDto(), $districtRep, $countyRep, $locationRep);
+        $landmarkUtils->manageLandmarks($entityManager, $parameters->getLandmarks(), $track, $pointUtils, $landmarkRep);
+        $pointUtils->managePoints($entityManager, $parameters->getPoints(), $track, $pointRep);
+        $this->fill($track, $parameters);
+        $entityManager->persist($track);
+        $entityManager->flush();
+        $this->manageFile($entityManager, $parameters->getFileUrl(), $track);
+        $entityManager->flush();
+
+        return $this->json(["msg_code" => "track_created"], JsonResponse::HTTP_CREATED);
+    }
+
+    #[Route("/api/tracks/{id<\d+>}", name: "update-track", methods: ["PUT"])]
+    public function updateTrack(
+        int $id, EntityManagerInterface $entityManager, Request $request, LandmarkUtils $landmarkUtils, LocationUtils $locationUtils,
+        PointUtils $pointUtils, LandmarkRepository $landmarkRep, TrackRepository $trackRep, PointRepository $pointRep,
+        DistrictRepository $districtRep, CountyRepository $countyRep, LocationRepository $locationRep
+    ): JsonResponse {
+        $track = $trackRep->findOneBy(["id" => $id]);
+        if (!$track) {
+            throw new HttpException(Response::HTTP_NOT_FOUND, "track_not_found");
+        }
+
+        $parameters = json_decode($request->getContent(), true);
+        $parameters = new TrackFormDto($parameters);
+        $locationUtils->fillStartLocation($entityManager, $track, $parameters->getStartLocationDto(), $districtRep, $countyRep, $locationRep);
+        $landmarkUtils->manageLandmarks($entityManager, $parameters->getLandmarks(), $track, $pointUtils, $landmarkRep);
+        $pointUtils->managePoints($entityManager, $parameters->getPoints(), $track, $pointRep);
+        $this->fill($track, $parameters);
+
+        $entityManager->flush();
+        return $this->json(["msg_code" => "track_updated"]);
+    }
+
+    private function fill(Track $track, TrackFormDto $parameters)
+    {
+        $track->setName($parameters->getName());
+        $track->setTrackUrl($parameters->getUrl());
+        $track->setDescription($parameters->getDescription());
+        $track->setDistance($parameters->getDistance());
+        $track->setSlope($parameters->getSlope());
+        $track->setRouteCode($parameters->getRouteCode());
+        $track->setDifficulty($parameters->getDifficulty());
+        $track->setLandscape($parameters->getLandscape());
+        $track->setEnjoyment($parameters->getEnjoyment());
+        $track->setTrackUrl($parameters->getTrackUrl());
+        $track->setOfficialUrl($parameters->getOfficialUrl());
+        $track->setGroupName($parameters->getGroupName());
+        $track->setGuide($parameters->getGuide());
+        $track->setWeekNumber($parameters->getWeekNumber());
+        $track->setIsMoita($parameters->getIsMoita());
+        $track->setDuration($parameters->getDuration());
+        $track->setDate($parameters->getDate());
+        $track->setStartTime($parameters->getStartTime());
+        $track->setEndTime($parameters->getEndTime());
+    }
+
+    private function manageFile(EntityManagerInterface $entityManager, string $url, Track $track): void
+    {
+        if ($track->getFileId() && $track->getFile()->getUrl() !== $url) {
+            @unlink($track->getFile()->getUrl());
+            $entityManager->remove($track->getFile());
+        } elseif (!$track->getFileId() || $track->getFile()->getUrl() !== $url) {
+            $trackId = $track->getId();
+            $urlTemp = $url;
+            $urlPath = explode("/", $urlTemp);
+            $filename = $urlPath[sizeof($urlPath) - 1];
+
+            $newFilepath = "files/$trackId/$filename";
+            $newFilepath = "../$newFilepath";
+
+            $path = pathinfo($newFilepath);
+            if (!file_exists($path["dirname"])) {
+                mkdir($path["dirname"], 0777, true);
+            }
+            if (!copy($urlTemp, $newFilepath)) {
+                throw new HttpException("failed_to_copy", Response::HTTP_CONFLICT);
+            }
+            unlink($urlTemp);
+
+            $file = new File();
+            $file->setName($newFilepath);
+            $file->setUrl($url);
+            $track->setFile($file);
+            $entityManager->persist($file);
+        }
     }
 }
