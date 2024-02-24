@@ -40,7 +40,7 @@
         </div>
       </div>
     </div>
-    <div class="field col-12 md:col-12">
+    <div v-if="!formObject.isMoita" class="field col-12 md:col-12">
       <label>Descrição</label>
       <Textarea v-model="formObject.description" rows="5" cols="30" />
     </div>
@@ -52,19 +52,19 @@
       <label>Elevação</label>
       <InputNumber v-model="formObject.slope" :minFractionDigits="2" :maxFractionDigits="2" />
     </div>
-    <div class="field col-12 md:col-6">
+    <div v-if="!formObject.isMoita" class="field col-12 md:col-6">
       <label>Código da rota</label>
       <InputText v-model="formObject.routeCode" type="text" />
     </div>
-    <div class="field col-12 md:col-6">
+    <div v-if="!formObject.isMoita" class="field col-12 md:col-6">
       <label>Dificuldade</label>
       <InputNumber v-model="formObject.difficulty" :min="1" :max="10" />
     </div>
-    <div class="field col-12 md:col-6">
+    <div v-if="!formObject.isMoita" class="field col-12 md:col-6">
       <label>Paisagem</label>
       <InputNumber v-model="formObject.landscape" :min="1" :max="10" />
     </div>
-    <div class="field col-12 md:col-6">
+    <div v-if="!formObject.isMoita" class="field col-12 md:col-6">
       <label>Aproveitamento</label>
       <InputNumber v-model="formObject.enjoyment" :min="1" :max="10" />
     </div>
@@ -72,7 +72,7 @@
       <label>Url do trilho gravado</label>
       <InputText v-model="formObject.trackUrl" type="text" />
     </div>
-    <div class="field col-12 md:col-6">
+    <div v-if="!formObject.isMoita" class="field col-12 md:col-6">
       <label>Url do trilho oficial</label>
       <InputText v-model="formObject.officialUrl" type="text" />
     </div>
@@ -80,7 +80,7 @@
       <label>Grupo</label>
       <InputText v-model="formObject.groupName" type="text" />
     </div>
-    <div class="field col-12 md:col-6">
+    <div v-if="!formObject.isMoita" class="field col-12 md:col-6">
       <label>Guia</label>
       <InputText v-model="formObject.guide" type="text" />
     </div>
@@ -209,6 +209,7 @@ const getFile = () => {
       if (!gpxDoc) {
         return;
       }
+      formObject.value.isMoita = false;
       getDataFromDocument(gpxDoc);
     });
 };
@@ -232,7 +233,9 @@ const getDataFromDocument = (gpxDoc: Document) => {
     previousDate = point.date;
   }
 
-  if (!formObject.value.isMoita) {
+  if (formObject.value.isMoita) {
+    setMoitaData();
+  } else {
     setLandmarks(gpxDoc);
   }
   setDateTimes();
@@ -352,7 +355,6 @@ const setDistances = () => {
   formObject.value.distance = totalDistance;
   formObject.value.slope = Number((totalSlope / 2).toFixed(3));
 };
-
 const haversineDistance = (coord1: PointForm, coord2: PointForm) => {
   function toRadians(degrees: number) {
     return degrees * Math.PI / 180;
@@ -370,6 +372,12 @@ const haversineDistance = (coord1: PointForm, coord2: PointForm) => {
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   const distance = R * c * 1000;
   return distance;
+}
+const setMoitaData = () => {
+  formObject.value.groupName = "Sozinho";
+  formObject.value.startDistrictId = "Santarém";
+  formObject.value.startCountyId = "Ourém";
+  formObject.value.startLocationId = "Moita";
 }
 
 const { load: loadDistricts, data: districts } = useApiGet<DistrictShort[]>(toast, []);
