@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Requests\Users\User;
+namespace App\Dto;
 
-use App\Utils\RequestUtils;
+use App\Utils\DtoUtils;
 
-class UserRequest
+class UserFormDto
 {
     private $role;
     private $username;
@@ -12,9 +12,9 @@ class UserRequest
 
     public function __construct(array $parameters)
     {
-        $this->role = RequestUtils::getString($parameters, ("role"));
-        $this->username = RequestUtils::getString($parameters, ("username"));
-        $this->password = RequestUtils::getString($parameters, ("password"));
+        $this->role = DtoUtils::getString($parameters, ("role"));
+        $this->username = DtoUtils::getString($parameters, ("username"));
+        $this->password = DtoUtils::getString($parameters, ("password"));
     }
 
     public function getRole(): ?string
