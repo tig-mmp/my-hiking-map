@@ -1,5 +1,4 @@
 <template>
-  <h1>{{ header }}</h1>
   <form class="p-fluid formgrid grid pb-6" @submit.prevent="validateForm">
     <div class="field col-12 md:col-12">
       <label>Título*</label>
@@ -154,7 +153,6 @@ const uploadProgress: Ref<number> = ref(0);
 
 let didReset = false;
 
-const header = computed(() => `${!props.id ? "Criar" : "Editar"} trilho`);
 const submitLabel = computed(() => !props.id ? "Criar" : "Guardar");
 const startCounties = computed(() => formObject.value.startDistrictId && !!districts.value ? districts.value.find(d => formObject.value.startDistrictId === d.id)?.states : []);
 const startLocations = computed(() => formObject.value.startCountyId && !!startCounties.value ? startCounties.value.find(c => formObject.value.startCountyId === c.id)?.locations : []);
