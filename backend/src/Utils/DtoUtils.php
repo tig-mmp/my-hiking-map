@@ -72,6 +72,6 @@ class DtoUtils
     public static function getArrayOrNull(array $parameters, string $key): ?array
     {
         $value = DtoUtils::getArray($parameters, $key);
-        return count($value) === 0 ? $value : null;
+        return count($value) > 0 ? $value : null;
     }
 }

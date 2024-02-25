@@ -5,7 +5,7 @@ export interface LandmarkForm {
   id?: number;
   name?: string;
   landmarkTypeId?: number;
-  file?: FileForm;
+  file?: FileForm | null;
   point?: PointForm;
 }
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Location;
+namespace App\Controller;
 
 use App\Entity\LandmarkType;
 use App\Repository\LandmarkTypeRepository;
@@ -13,7 +13,7 @@ class LandmarkTypesController extends AbstractController
 {
     public $MIDDLEWARE = "jwt";
 
-    #[Route("/api/landmarkTypes", name: "list-landmarkTypes", methods: ["GET"])]
+    #[Route("/api/landmark-types", name: "list-landmark-types", methods: ["GET"])]
     public function listLandmarkTypes(Request $request, LandmarkTypeRepository $landmarkTypeRep): JsonResponse
     {
         $landmarkTypes = $landmarkTypeRep->findAll();
