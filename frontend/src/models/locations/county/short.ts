@@ -1,10 +1,10 @@
 import { LocationShort } from "@/models/locations/location/short";
 
-export interface StateShort {
+export interface CountyShort {
   id: number;
   name: string;
   locations: LocationShort[];
 }
 
-const stateShortDataType = "short";
-export { stateShortDataType };
+const countyShortDataType = "short";
+export { countyShortDataType };

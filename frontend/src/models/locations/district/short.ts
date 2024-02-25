@@ -1,9 +1,9 @@
-import { StateShort } from "@/models/locations/state/short";
+import { CountyShort } from "@/models/locations/county/short";
 
 export interface DistrictShort {
   id: number;
   name: string;
-  states: StateShort[];
+  counties: CountyShort[];
 }
 
 const districtShortDataType = "short";
