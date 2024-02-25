@@ -56,6 +56,32 @@ class Landmark
         return $this->id;
     }
 
+    public function serializeList(): array
+    {
+        return ["id" => $this->id, "file" => $this->getFileSerialized()];
+    }
+
+    public function serializeForm(): array
+    {
+        return [
+            "id" => $this->id,
+            "name" => $this->name,
+            "file" => $this->getFileSerialized(),
+            "point" => $this->getPointSerialized(),
+            "landmarkTypeId" => $this->landmarkTypeId,
+        ];
+    }
+
+    private function getFileSerialized(): ?array
+    {
+        return $this->fileId ? $this->file->serializeForm() : null;
+    }
+
+    private function getPointSerialized(): ?array
+    {
+        return $this->pointId ? $this->point->serializeForm() : null;
+    }
+
     public function getName(): ?string
     {
         return $this->name;

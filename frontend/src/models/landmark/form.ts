@@ -1,7 +1,13 @@
 import { PointForm } from "@/models/point/form";
+import { FileForm } from "@/models/file/form";
 
 export interface LandmarkForm {
   id?: number;
   name?: string;
+  landmarkTypeId?: number;
+  file?: FileForm;
   point?: PointForm;
 }
+
+const landmarkFormDataType = "form";
+export { landmarkFormDataType };

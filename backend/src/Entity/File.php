@@ -22,6 +22,11 @@ class File
     #[Column(length: 100)]
     private ?string $url = null;
 
+    public function serializeForm(): array
+    {
+        return ["id" => $this->id, "name" => $this->name, "url" => $this->url];
+    }
+
     public function getId(): ?int
     {
         return $this->id;
