@@ -13,10 +13,12 @@ export function useApiRoutes() {
   const districtsApi = API + "districts";
   const landmarksApi = API + "landmarks";
   const landmarksMultipleApi = API + "landmarks-multiple";
+  const landmarkTypesApi = API + "landmark-types";
 
   const getUsersApi = (id: number) => `${usersApi}/${id}`;
   const getTracksApi = (id: number) => `${tracksApi}/${id}`;
   const getLandmarksApi = (id: number) => `${landmarksApi}/${id}`;
+  const getLandmarkTypesApi = (id: number) => `${landmarkTypesApi}/${id}`;
 
   return {
     uploadApi,
@@ -28,9 +30,11 @@ export function useApiRoutes() {
     districtsApi,
     landmarksApi,
     landmarksMultipleApi,
+    landmarkTypesApi,
     getUsersApi,
     getTracksApi,
     getLandmarksApi,
+    getLandmarkTypesApi,
   };
 }
 

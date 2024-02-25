@@ -26,6 +26,21 @@ class LandmarkType
     #[OneToMany(mappedBy: "landmarkType", targetEntity: Landmark::class)]
     private Collection $landmarks;
 
+    public function serializeShort(): array
+    {
+        return ["id" => $this->id, "name" => $this->name];
+    }
+
+    public function serializeForm(): array
+    {
+        return ["id" => $this->id, "name" => $this->name];
+    }
+
+    public function serializeList(): array
+    {
+        return ["id" => $this->id, "name" => $this->name];
+    }
+
     public function __construct()
     {
         $this->landmarks = new ArrayCollection();
