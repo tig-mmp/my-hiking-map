@@ -15,7 +15,13 @@ class ExceptionListener
         $errorCode = $exception instanceof HttpExceptionInterface ? $exception->getStatusCode() : Response::HTTP_INTERNAL_SERVER_ERROR;
         $parameters = $exception instanceof HttpExceptionInterface ? $exception->getHeaders() : null;
 
-        $responseMessage = ["msg_code" => $exception->getMessage()];
+        $responseMessage = [
+            "msg_code" => $exception->getMessage(),
+            "file" => $exception->getFile(),
+            "message" => $exception->getMessage(),
+            "line" => $exception->getLine(),
+            "trace" => $exception->getTraceAsString(),
+        ];
         if ($parameters && is_array($parameters)) {
             $responseMessage = array_merge($responseMessage, $parameters);
         }
