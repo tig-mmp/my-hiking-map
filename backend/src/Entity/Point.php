@@ -58,7 +58,7 @@ class Point
             "elevation" => $this->elevation,
             "latitude" => $this->latitude,
             "longitude" => $this->longitude,
-            "date" => $this->date,
+            "date" => $this->date ? $this->date->format("Y-m-d H:i:s P") : null,
         ];
     }
 

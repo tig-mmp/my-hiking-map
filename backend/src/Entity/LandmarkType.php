@@ -41,9 +41,10 @@ class LandmarkType
         return ["id" => $this->id, "name" => $this->name];
     }
 
-    public function __construct()
+    public function __construct(string $name)
     {
         $this->landmarks = new ArrayCollection();
+        $this->name = $name;
     }
 
     public function getId(): ?int

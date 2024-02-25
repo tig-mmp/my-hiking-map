@@ -114,7 +114,11 @@
         </div>
       </TabPanel>
       <TabPanel header="Pontos de interesse">
-        <div class="grid">
+        <div class="grid" v-if="formObject.landmarks">
+          <div v-for="(landmark, i) in formObject.landmarks" :key="landmark.id"
+            class="field col-12 border-primary-500 hover:border-cyan-700 border-round surface-overlay border-3 pt-3">
+            <TrackLandmarkForm v-model="formObject.landmarks[i]" />
+          </div>
         </div>
       </TabPanel>
     </TabView>
@@ -134,7 +138,7 @@
 <script setup lang="ts">
 import { trackFormDataType, type TrackForm } from "@/models/track/form";
 import type { FileUploadProgressEvent, FileUploadUploadEvent } from "primevue/fileupload";
-import { computed, ref, watch, type Ref, onMounted } from "vue";
+import { computed, ref, watch, type Ref, onMounted, defineAsyncComponent } from "vue";
 import ProgressBar from "primevue/progressbar";
 import useApiRoutes from "@/composables/api/useApiRoutes";
 import { useToast } from "primevue/usetoast";
@@ -154,13 +158,14 @@ import { getDistance } from "geolib";
 import TabView from "primevue/tabview";
 import TabPanel from "primevue/tabpanel";
 
+const TrackLandmarkForm = defineAsyncComponent(() => import("@/components/tracks/TrackLandmarkForm.vue"));
+
 const props = defineProps<{ id: number | null }>();
 const emit = defineEmits(["changed", "cancel"]);
 
 const toast = useToast();
 const { tracksApi, getTracksApi, uploadApi, districtsApi, fileApi } = useApiRoutes();
 
-const fileUploaded: Ref<FileForm | null> = ref(null);
 const uploadProgress: Ref<number> = ref(0);
 
 let didReset = false;
