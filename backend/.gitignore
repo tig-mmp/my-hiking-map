@@ -10,4 +10,5 @@
 
 /config/jwt/*.pem
 /public/tmp/*
+/public/files/*
 /files/*

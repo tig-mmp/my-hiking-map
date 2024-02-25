@@ -5,6 +5,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Uid\Uuid;
 use Throwable;
@@ -12,23 +13,47 @@ use Throwable;
 class FilesController extends AbstractController
 {
     #[Route("/api/upload", name: "upload-file", methods: ["POST"])]
-    public function upload(): Response
+    public function uploadFile(): Response
     {
         $file = $_FILES["file"];
         if (!file_exists("tmp")) {
             mkdir("tmp", 0777, true);
         }
-        $name = $file["name"];
+        $data = $this->copyFileToTmpFolder($file["name"], $file["tmp_name"]);
+        $this->clearTmpFiles();
+        return $this->json(["msg_code" => "file_saved", "data" => $data]);
+    }
 
+    #[Route("/api/upload-multiple", name: "upload-multiple-files", methods: ["POST"])]
+    public function uploadMultipleFiles(): Response
+    {
+        $files = $_FILES["files"];
+        if (!file_exists("tmp")) {
+            mkdir("tmp", 0777, true);
+        }
+        $data = [];
+        for ($i = 0; $i < count($files["name"]); $i++) {
+            $data[] = $this->copyFileToTmpFolder($files["name"][$i], $files["tmp_name"][$i]);
+        }
+        $this->clearTmpFiles();
+        return $this->json(["msg_code" => "file_saved", "data" => $data]);
+    }
+
+    private function copyFileToTmpFolder(string $name, string $tmpUrl): array
+    {
         $uuid = Uuid::v4();
         $extension = pathinfo($name)["extension"];
         $newFilename = $uuid . "." . $extension;
 
-        if (!copy($file["tmp_name"], "tmp/" . $newFilename)) {
-            return $this->json(["msg_code" => "failed_to_copy"], 409);
+        if (!copy($tmpUrl, "tmp/" . $newFilename)) {
+            throw new HttpException(Response::HTTP_CONFLICT, "failed_to_copy");
         }
         $url = "tmp/" . $newFilename;
+        return ["name" => $name, "url" => $url];
+    }
 
+    private function clearTmpFiles()
+    {
         if ($handle = opendir("tmp/")) {
             while (false !== ($file = readdir($handle))) {
                 $fPath = "tmp/$file";
@@ -41,7 +66,6 @@ class FilesController extends AbstractController
             }
             closedir($handle);
         }
-        return $this->json(["msg_code" => "file_saved", "data" => ["name" => $name, "url" => $url]]);
     }
 
     #[Route("/api/file", name: "get-file", methods: ["GET"])]
@@ -57,7 +81,7 @@ class FilesController extends AbstractController
                 }
             } else {
 
-                return $this->file("../$url");
+                return $this->file($url);
             }
         } catch (Throwable $th) {
             return $this->json(["msg_code" => $th->getMessage()]);
