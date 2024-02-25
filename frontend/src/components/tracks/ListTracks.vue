@@ -16,7 +16,8 @@
       </template>
     </Column>
   </DataTable>
-  <Sidebar v-model:visible="showForm" :dismissable="false" class="p-sidebar-md" position="right">
+  <Sidebar v-model:visible="showForm" :dismissable="false" class="w-full" position="right"
+    :header="`${!!idToEdit ? 'Criar' : 'Editar'} trilho`">
     <TrackForm :id="idToEdit" @changed="getData" @cancel="setForm(false, null)" />
   </Sidebar>
 </template>
