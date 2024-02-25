@@ -137,7 +137,7 @@ class TracksController extends AbstractController
             $filename = $urlPath[sizeof($urlPath) - 1];
 
             $newFilepath = "files/$trackId/$filename";
-            $newFilepath = "../$newFilepath";
+            $newFilepath = "$newFilepath";
 
             $path = pathinfo($newFilepath);
             if (!file_exists($path["dirname"])) {
