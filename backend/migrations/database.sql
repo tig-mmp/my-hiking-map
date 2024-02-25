@@ -127,6 +127,7 @@ CREATE TABLE `landmark` (
   `file_id` int DEFAULT NULL,
   `point_id` int DEFAULT NULL,
   `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `is_moita` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `landmark_file_FK` (`file_id`),
   KEY `landmark_track_FK` (`track_id`),
