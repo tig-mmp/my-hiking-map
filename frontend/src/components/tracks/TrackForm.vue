@@ -235,9 +235,8 @@ const getDataFromDocument = (gpxDoc: Document) => {
 
   if (formObject.value.isMoita) {
     setMoitaData();
-  } else {
-    setLandmarks(gpxDoc);
   }
+  setLandmarks(gpxDoc);
   setDateTimes();
   setDistances();
 }
