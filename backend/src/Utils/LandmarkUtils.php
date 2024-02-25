@@ -4,8 +4,10 @@ namespace App\Utils;
 
 use App\Dto\LandmarkFormDto;
 use App\Entity\Landmark;
+use App\Entity\LandmarkType;
 use App\Entity\Track;
 use App\Repository\LandmarkRepository;
+use App\Repository\LandmarkTypeRepository;
 use App\Utils\PointUtils;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,8 +15,10 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class LandmarkUtils
 {
-    public function manageLandmarks(EntityManager $entityManager, array $landmarks, ?Track $track, PointUtils $pointUtils, LandmarkRepository $landmarkRep)
-    {
+    public function manageLandmarks(
+        EntityManager $entityManager, array $landmarks, ?Track $track, PointUtils $pointUtils,
+        FileUtils $fileUtils, LandmarkRepository $landmarkRep, LandmarkTypeRepository $landmarkTypeRep
+    ) {
         foreach ($landmarks as $landmarkParameters) {
             $landmarkFormDto = new LandmarkFormDto($landmarkParameters);
             if (!$landmarkFormDto->getPoint()) {
@@ -25,7 +29,9 @@ class LandmarkUtils
             } else {
                 $landmark = $this->create($entityManager, $landmarkFormDto, $pointUtils);
             }
+            $fileUtils->manageFile($entityManager, $landmarkFormDto->getFile(), $track, $landmark);
             $landmark->setTrack($track);
+            $this->setLandmarkType($entityManager, $landmark, $landmarkFormDto->getLandmarkTypeId(), $landmarkFormDto->getLandmarkTypeName(), $landmarkTypeRep);
         }
     }
 
@@ -51,5 +57,23 @@ class LandmarkUtils
         $landmark->setName($parameters->getName());
         $entityManager->persist($landmark);
         return $landmark;
+    }
+
+    private function setLandmarkType(EntityManager $entityManager, Landmark $landmark, ?int $id, ?string $name, LandmarkTypeRepository $landmarkTypeRep): ?LandmarkType
+    {
+        if (!$id && !$name) {
+            return null;
+        }
+        if (!$id && $name) {
+            $landmarkType = $landmarkTypeRep->findOneBy(["name" => $name]);
+            if (!$landmarkType) {
+                $landmarkType = new LandmarkType($name);
+                $entityManager->persist($landmarkType);
+            }
+        } else {
+            $landmarkType = $landmarkTypeRep->findOneBy(["id" => $id]);
+        }
+        $landmark->setLandmarkType($landmarkType);
+        return $landmarkType;
     }
 }

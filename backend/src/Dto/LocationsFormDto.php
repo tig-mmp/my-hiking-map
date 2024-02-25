@@ -6,12 +6,12 @@ use App\Utils\DtoUtils;
 
 class LocationsFormDto
 {
-    private ?int $districtId;
-    private ?string $districtName;
-    private ?int $countyId;
-    private ?string $countyName;
-    private ?int $locationId;
-    private ?string $locationName;
+    private ?int $districtId = null;
+    private ?string $districtName = null;
+    private ?int $countyId = null;
+    private ?string $countyName = null;
+    private ?int $locationId = null;
+    private ?string $locationName = null;
 
     public function __construct(array $parameters, bool $isStart = false)
     {

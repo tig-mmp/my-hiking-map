@@ -153,7 +153,17 @@ class Track
             "date" => $this->date ? $this->date->format("Y-m-d H:i:s P") : null,
             "startTime" => $this->startTime,
             "endTime" => $this->endTime,
+            "landmarks" => $this->getLandmarksSerialized(),
         ];
+    }
+
+    private function getLandmarksSerialized(): array
+    {
+        $files = [];
+        foreach ($this->landmarks as $landmark) {
+            $files[] = $landmark->serializeForm();
+        }
+        return $files;
     }
 
     public function getId(): ?int
