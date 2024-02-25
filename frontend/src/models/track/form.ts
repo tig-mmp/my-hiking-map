@@ -1,10 +1,11 @@
 import { LandmarkForm } from "@/models/landmark/form";
 import { PointForm } from "@/models/point/form";
+import { FileForm } from "../file/form";
 
 export interface TrackForm {
   id?: number;
   name?: string;
-  fileUrl?: string;
+  file?: FileForm;
   startDistrictId?: number | string;
   startCountyId?: number | string;
   startLocationId?: number | string;

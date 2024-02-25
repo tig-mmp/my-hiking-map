@@ -29,7 +29,7 @@ class TrackFormDto
     private ?string $startTime;
     private ?string $endTime;
     private array $landmarks;
-    private ?string $fileUrl;
+    private ?FileFormDto $file;
     private array $points;
 
     public function __construct(array $parameters)
@@ -56,7 +56,8 @@ class TrackFormDto
         $this->startTime = DtoUtils::getString($parameters, "startTime");
         $this->endTime = DtoUtils::getString($parameters, "endTime");
         $this->landmarks = DtoUtils::getArray($parameters, "landmarks");
-        $this->fileUrl = DtoUtils::getString($parameters, "fileUrl");
+        $file = DtoUtils::getArrayOrNull($parameters, "file");
+        $this->file = $file ? new FileFormDto($file) : null;
         $this->points = DtoUtils::getArray($parameters, "points");
     }
 
@@ -170,9 +171,9 @@ class TrackFormDto
         return $this->landmarks;
     }
 
-    public function getFileUrl(): ?string
+    public function getFile(): ?FileFormDto
     {
-        return $this->fileUrl;
+        return $this->file;
     }
 
     public function getPoints(): ?array

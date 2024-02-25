@@ -12,7 +12,7 @@
             <div class="grid pt-3 m-0">
               <FileUpload :url="uploadApi" mode="basic" name="file" choose-label="Adicionar ficheiro" auto
                 @upload="afterUpload" @progress="setUploadProgress" />
-              <div v-if="fileUploaded" class="col-3">
+              <div v-if="formObject.file && !formObject.file.id" class="col-3">
                 <Button class="p-button-outlined" type="button" label="Cancelar" icon="pi pi-times"
                   @click="cancelUpload" />
               </div>
@@ -133,7 +133,6 @@
 
 <script setup lang="ts">
 import { trackFormDataType, type TrackForm } from "@/models/track/form";
-import type { FileForm } from "@/models/file/form";
 import type { FileUploadProgressEvent, FileUploadUploadEvent } from "primevue/fileupload";
 import { computed, ref, watch, type Ref, onMounted } from "vue";
 import ProgressBar from "primevue/progressbar";
@@ -206,14 +205,14 @@ const cancel = () => {
 
 const setUploadProgress = (event: FileUploadProgressEvent) => uploadProgress.value = event.progress;
 const afterUpload = (request: FileUploadUploadEvent) => {
-  formObject.value.fileUrl = JSON.parse(request.xhr.response).data.url;
+  formObject.value.file = JSON.parse(request.xhr.response).data;
   getFile();
 }
-const cancelUpload = (): null => fileUploaded.value = null;
+const cancelUpload = () => formObject.value.file = {};
 const { load: loadFile } = useApiGet<string>(toast, "");
 const getFile = () => {
-  if (!formObject.value.fileUrl) return;
-  loadFile(fileApi, { "url": formObject.value.fileUrl.replace(/\.[^.]+$/, "") })
+  if (!formObject.value.file?.url) return;
+  loadFile(fileApi, { "url": formObject.value.file.url.replace(/\.[^.]+$/, "") })
     .then((response) => {
       if (!response || typeof response.data !== "string") return;
       const gpxDoc = new DOMParser().parseFromString(response.data, "text/xml");

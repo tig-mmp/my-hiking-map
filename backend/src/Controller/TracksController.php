@@ -3,14 +3,15 @@
 namespace App\Controller;
 
 use App\Dto\TrackFormDto;
-use App\Entity\File;
 use App\Entity\Track;
 use App\Repository\CountyRepository;
 use App\Repository\DistrictRepository;
 use App\Repository\LandmarkRepository;
+use App\Repository\LandmarkTypeRepository;
 use App\Repository\LocationRepository;
 use App\Repository\PointRepository;
 use App\Repository\TrackRepository;
+use App\Utils\FileUtils;
 use App\Utils\LandmarkUtils;
 use App\Utils\LocationUtils;
 use App\Utils\PointUtils;
@@ -61,20 +62,20 @@ class TracksController extends AbstractController
     #[Route("/api/tracks", name: "create-track", methods: ["POST"])]
     public function createTrack(
         EntityManagerInterface $entityManager, Request $request, LandmarkUtils $landmarkUtils, LocationUtils $locationUtils,
-        PointUtils $pointUtils, LandmarkRepository $landmarkRep, PointRepository $pointRep,
-        DistrictRepository $districtRep, CountyRepository $countyRep, LocationRepository $locationRep
+        PointUtils $pointUtils, FileUtils $fileUtils, LandmarkRepository $landmarkRep, PointRepository $pointRep,
+        DistrictRepository $districtRep, CountyRepository $countyRep, LocationRepository $locationRep, LandmarkTypeRepository $landmarkTypeRep
     ): JsonResponse {
         $parameters = json_decode($request->getContent(), true);
         $parameters = new TrackFormDto($parameters);
 
         $track = new Track();
         $locationUtils->fillStartLocation($entityManager, $track, $parameters->getStartLocationDto(), $districtRep, $countyRep, $locationRep);
-        $landmarkUtils->manageLandmarks($entityManager, $parameters->getLandmarks(), $track, $pointUtils, $landmarkRep);
+        $landmarkUtils->manageLandmarks($entityManager, $parameters->getLandmarks(), $track, $pointUtils, $fileUtils, $landmarkRep, $landmarkTypeRep);
         $pointUtils->managePoints($entityManager, $parameters->getPoints(), $track, $pointRep);
         $this->fill($track, $parameters);
         $entityManager->persist($track);
         $entityManager->flush();
-        $this->manageFile($entityManager, $parameters->getFileUrl(), $track);
+        $fileUtils->manageFile($entityManager, $parameters->getFile(), $track, null);
         $entityManager->flush();
 
         return $this->json(["msg_code" => "track_created"], JsonResponse::HTTP_CREATED);
@@ -83,8 +84,8 @@ class TracksController extends AbstractController
     #[Route("/api/tracks/{id<\d+>}", name: "update-track", methods: ["PUT"])]
     public function updateTrack(
         int $id, EntityManagerInterface $entityManager, Request $request, LandmarkUtils $landmarkUtils, LocationUtils $locationUtils,
-        PointUtils $pointUtils, LandmarkRepository $landmarkRep, TrackRepository $trackRep, PointRepository $pointRep,
-        DistrictRepository $districtRep, CountyRepository $countyRep, LocationRepository $locationRep
+        PointUtils $pointUtils, FileUtils $fileUtils, LandmarkRepository $landmarkRep, TrackRepository $trackRep, PointRepository $pointRep,
+        DistrictRepository $districtRep, CountyRepository $countyRep, LocationRepository $locationRep, LandmarkTypeRepository $landmarkTypeRep
     ): JsonResponse {
         $track = $trackRep->findOneBy(["id" => $id]);
         if (!$track) {
@@ -94,8 +95,9 @@ class TracksController extends AbstractController
         $parameters = json_decode($request->getContent(), true);
         $parameters = new TrackFormDto($parameters);
         $locationUtils->fillStartLocation($entityManager, $track, $parameters->getStartLocationDto(), $districtRep, $countyRep, $locationRep);
-        $landmarkUtils->manageLandmarks($entityManager, $parameters->getLandmarks(), $track, $pointUtils, $landmarkRep);
+        $landmarkUtils->manageLandmarks($entityManager, $parameters->getLandmarks(), $track, $pointUtils, $fileUtils, $landmarkRep, $landmarkTypeRep);
         $pointUtils->managePoints($entityManager, $parameters->getPoints(), $track, $pointRep);
+        $fileUtils->manageFile($entityManager, $parameters->getFile(), $track, null);
         $this->fill($track, $parameters);
 
         $entityManager->flush();
@@ -123,36 +125,5 @@ class TracksController extends AbstractController
         $track->setDate($parameters->getDate());
         $track->setStartTime($parameters->getStartTime());
         $track->setEndTime($parameters->getEndTime());
-    }
-
-    private function manageFile(EntityManagerInterface $entityManager, string $url, Track $track): void
-    {
-        if ($track->getFileId() && $track->getFile()->getUrl() !== $url) {
-            @unlink($track->getFile()->getUrl());
-            $entityManager->remove($track->getFile());
-        } elseif (!$track->getFileId() || $track->getFile()->getUrl() !== $url) {
-            $trackId = $track->getId();
-            $urlTemp = $url;
-            $urlPath = explode("/", $urlTemp);
-            $filename = $urlPath[sizeof($urlPath) - 1];
-
-            $newFilepath = "files/$trackId/$filename";
-            $newFilepath = "$newFilepath";
-
-            $path = pathinfo($newFilepath);
-            if (!file_exists($path["dirname"])) {
-                mkdir($path["dirname"], 0777, true);
-            }
-            if (!copy($urlTemp, $newFilepath)) {
-                throw new HttpException("failed_to_copy", Response::HTTP_CONFLICT);
-            }
-            unlink($urlTemp);
-
-            $file = new File();
-            $file->setName($newFilepath);
-            $file->setUrl($url);
-            $track->setFile($file);
-            $entityManager->persist($file);
-        }
     }
 }
