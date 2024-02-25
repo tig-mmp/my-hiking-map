@@ -133,7 +133,7 @@
 
 <script setup lang="ts">
 import { trackFormDataType, type TrackForm } from "@/models/track/form";
-import type { FileUploaded } from "@/models/file/uploaded";
+import type { FileForm } from "@/models/file/form";
 import type { FileUploadProgressEvent, FileUploadUploadEvent } from "primevue/fileupload";
 import { computed, ref, watch, type Ref, onMounted } from "vue";
 import ProgressBar from "primevue/progressbar";
@@ -161,7 +161,7 @@ const emit = defineEmits(["changed", "cancel"]);
 const toast = useToast();
 const { tracksApi, getTracksApi, uploadApi, districtsApi, fileApi } = useApiRoutes();
 
-const fileUploaded: Ref<FileUploaded | null> = ref(null);
+const fileUploaded: Ref<FileForm | null> = ref(null);
 const uploadProgress: Ref<number> = ref(0);
 
 let didReset = false;

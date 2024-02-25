@@ -51,6 +51,17 @@ class Point
         $this->landmarks = new ArrayCollection();
     }
 
+    public function serializeForm(): array
+    {
+        return [
+            "id" => $this->id,
+            "elevation" => $this->elevation,
+            "latitude" => $this->latitude,
+            "longitude" => $this->longitude,
+            "date" => $this->date,
+        ];
+    }
+
     public function getId(): ?int
     {
         return $this->id;

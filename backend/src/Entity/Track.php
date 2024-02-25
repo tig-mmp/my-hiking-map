@@ -73,7 +73,7 @@ class Track
     private ?int $weekNumber = null;
 
     #[Column]
-    private ?bool $isMoita = false;
+    private bool $isMoita = false;
 
     #[Column(length: 6, nullable: true)]
     private ?string $duration = null;
@@ -312,7 +312,7 @@ class Track
         $this->weekNumber = $weekNumber;
     }
 
-    public function isIsMoita(): ?bool
+    public function isIsMoita(): bool
     {
         return $this->isMoita;
     }
