@@ -1,112 +1,123 @@
 <template>
   <form class="p-fluid formgrid grid pb-6" @submit.prevent="validateForm">
-    <div class="field col-12 md:col-12">
-      <label>Título*</label>
-      <InputText v-model="formObject.name" type="text" />
-    </div>
+    <TabView class="w-full">
+      <TabPanel header="Dados">
+        <div class="grid">
+          <div class="field col-12 md:col-12">
+            <label>Título*</label>
+            <InputText v-model="formObject.name" type="text" />
+          </div>
 
-    <div class="field col-12">
-      <div class="grid pt-3 m-0">
-        <FileUpload :url="uploadApi" :max-file-size="100000000" class="p-fileupload-buttonbar p-fileupload-content"
-          mode="basic" name="file" choose-label="Adicionar ficheiro" auto @upload="afterUpload"
-          @progress="setUploadProgress" />
-        <div v-if="fileUploaded" class="col-3">
-          <Button class="p-button-outlined" type="button" label="Cancelar" icon="pi pi-times" @click="cancelUpload" />
-        </div>
-      </div>
-      <ProgressBar v-if="(isLoadingUpdate || isLoadingCreate) && uploadProgress !== 100" :value="uploadProgress"
-        class="process-bar-separator" />
-      <ProgressBar v-if="(isLoadingUpdate || isLoadingCreate) && (uploadProgress === 100 || uploadProgress == null)"
-        class="text-center mb-2" mode="indeterminate" />
-    </div>
+          <div class="field col-12">
+            <div class="grid pt-3 m-0">
+              <FileUpload :url="uploadApi" mode="basic" name="file" choose-label="Adicionar ficheiro" auto
+                @upload="afterUpload" @progress="setUploadProgress" />
+              <div v-if="fileUploaded" class="col-3">
+                <Button class="p-button-outlined" type="button" label="Cancelar" icon="pi pi-times"
+                  @click="cancelUpload" />
+              </div>
+            </div>
+            <ProgressBar v-if="(isLoadingUpdate || isLoadingCreate) && uploadProgress !== 100" :value="uploadProgress"
+              class="process-bar-separator" />
+            <ProgressBar v-if="(isLoadingUpdate || isLoadingCreate) && (uploadProgress === 100 || uploadProgress == null)"
+              class="text-center mb-2" mode="indeterminate" />
+          </div>
 
-    <div class="field col-12 md:col-12">
-      <label>Ponto de começo</label>
-      <div class="p-fluid formgrid grid">
-        <div class="field col-12 md:col-4">
-          <label>Distrito</label>
-          <Dropdown v-model="formObject.startDistrictId" editable :options="districts" optionLabel="name" inputId="id" />
+          <div class="field col-12 md:col-12">
+            <label>Ponto de começo</label>
+            <div class="p-fluid formgrid grid">
+              <div class="field col-12 md:col-4">
+                <label>Distrito</label>
+                <Dropdown v-model="formObject.startDistrictId" editable :options="districts" optionLabel="name"
+                  inputId="id" />
+              </div>
+              <div class="field col-12 md:col-4">
+                <label>Concelho</label>
+                <Dropdown v-model="formObject.startCountyId" editable :options="startCounties" optionLabel="name"
+                  inputId="id" />
+              </div>
+              <div class="field col-12 md:col-4">
+                <label>Localização</label>
+                <Dropdown v-model="formObject.startLocationId" editable :options="startLocations" optionLabel="name"
+                  inputId="id" />
+              </div>
+            </div>
+          </div>
+          <div v-if="!formObject.isMoita" class="field col-12 md:col-12">
+            <label>Descrição</label>
+            <Textarea v-model="formObject.description" rows="5" cols="30" />
+          </div>
+          <div class="field col-12 md:col-6">
+            <label>Distância</label>
+            <InputNumber v-model="formObject.distance" :minFractionDigits="2" :maxFractionDigits="2" />
+          </div>
+          <div class="field col-12 md:col-6">
+            <label>Elevação</label>
+            <InputNumber v-model="formObject.slope" :minFractionDigits="2" :maxFractionDigits="2" />
+          </div>
+          <div v-if="!formObject.isMoita" class="field col-12 md:col-6">
+            <label>Código da rota</label>
+            <InputText v-model="formObject.routeCode" type="text" />
+          </div>
+          <div v-if="!formObject.isMoita" class="field col-12 md:col-6">
+            <label>Dificuldade</label>
+            <InputNumber v-model="formObject.difficulty" :min="1" :max="10" />
+          </div>
+          <div v-if="!formObject.isMoita" class="field col-12 md:col-6">
+            <label>Paisagem</label>
+            <InputNumber v-model="formObject.landscape" :min="1" :max="10" />
+          </div>
+          <div v-if="!formObject.isMoita" class="field col-12 md:col-6">
+            <label>Aproveitamento</label>
+            <InputNumber v-model="formObject.enjoyment" :min="1" :max="10" />
+          </div>
+          <div class="field col-12 md:col-6">
+            <label>Url do trilho gravado</label>
+            <InputText v-model="formObject.trackUrl" type="text" />
+          </div>
+          <div v-if="!formObject.isMoita" class="field col-12 md:col-6">
+            <label>Url do trilho oficial</label>
+            <InputText v-model="formObject.officialUrl" type="text" />
+          </div>
+          <div class="field col-12 md:col-6">
+            <label>Grupo</label>
+            <InputText v-model="formObject.groupName" type="text" />
+          </div>
+          <div v-if="!formObject.isMoita" class="field col-12 md:col-6">
+            <label>Guia</label>
+            <InputText v-model="formObject.guide" type="text" />
+          </div>
+          <div class="field col-12 md:col-6">
+            <label>Número da semana</label>
+            <InputNumber v-model="formObject.weekNumber" :min="1" :max="53" />
+          </div>
+          <div class="field col-12 md:col-6">
+            <label>É moita?</label>
+            <InputSwitch v-model="formObject.isMoita" class="flex" />
+          </div>
+          <div class="field col-12 md:col-6">
+            <label>Duração</label>
+            <Calendar v-model="formObject.duration" timeOnly dateFormat="yy-mm-dd" />
+          </div>
+          <div class="field col-12 md:col-6">
+            <label>Dia</label>
+            <Calendar v-model="formObject.date" dateFormat="yy-mm-dd" />
+          </div>
+          <div class="field col-12 md:col-6">
+            <label>Hora de começo</label>
+            <Calendar v-model="formObject.startTime" timeOnly dateFormat="yy-mm-dd" />
+          </div>
+          <div class="field col-12 md:col-6">
+            <label>Hora de finalização</label>
+            <Calendar v-model="formObject.endTime" timeOnly dateFormat="yy-mm-dd" />
+          </div>
         </div>
-        <div class="field col-12 md:col-4">
-          <label>Concelho</label>
-          <Dropdown v-model="formObject.startCountyId" editable :options="startCounties" optionLabel="name"
-            inputId="id" />
+      </TabPanel>
+      <TabPanel header="Pontos de interesse">
+        <div class="grid">
         </div>
-        <div class="field col-12 md:col-4">
-          <label>Localização</label>
-          <Dropdown v-model="formObject.startLocationId" editable :options="startLocations" optionLabel="name"
-            inputId="id" />
-        </div>
-      </div>
-    </div>
-    <div v-if="!formObject.isMoita" class="field col-12 md:col-12">
-      <label>Descrição</label>
-      <Textarea v-model="formObject.description" rows="5" cols="30" />
-    </div>
-    <div class="field col-12 md:col-6">
-      <label>Distância</label>
-      <InputNumber v-model="formObject.distance" :minFractionDigits="2" :maxFractionDigits="2" />
-    </div>
-    <div class="field col-12 md:col-6">
-      <label>Elevação</label>
-      <InputNumber v-model="formObject.slope" :minFractionDigits="2" :maxFractionDigits="2" />
-    </div>
-    <div v-if="!formObject.isMoita" class="field col-12 md:col-6">
-      <label>Código da rota</label>
-      <InputText v-model="formObject.routeCode" type="text" />
-    </div>
-    <div v-if="!formObject.isMoita" class="field col-12 md:col-6">
-      <label>Dificuldade</label>
-      <InputNumber v-model="formObject.difficulty" :min="1" :max="10" />
-    </div>
-    <div v-if="!formObject.isMoita" class="field col-12 md:col-6">
-      <label>Paisagem</label>
-      <InputNumber v-model="formObject.landscape" :min="1" :max="10" />
-    </div>
-    <div v-if="!formObject.isMoita" class="field col-12 md:col-6">
-      <label>Aproveitamento</label>
-      <InputNumber v-model="formObject.enjoyment" :min="1" :max="10" />
-    </div>
-    <div class="field col-12 md:col-6">
-      <label>Url do trilho gravado</label>
-      <InputText v-model="formObject.trackUrl" type="text" />
-    </div>
-    <div v-if="!formObject.isMoita" class="field col-12 md:col-6">
-      <label>Url do trilho oficial</label>
-      <InputText v-model="formObject.officialUrl" type="text" />
-    </div>
-    <div class="field col-12 md:col-6">
-      <label>Grupo</label>
-      <InputText v-model="formObject.groupName" type="text" />
-    </div>
-    <div v-if="!formObject.isMoita" class="field col-12 md:col-6">
-      <label>Guia</label>
-      <InputText v-model="formObject.guide" type="text" />
-    </div>
-    <div class="field col-12 md:col-6">
-      <label>Número da semana</label>
-      <InputNumber v-model="formObject.weekNumber" :min="1" :max="53" />
-    </div>
-    <div class="field col-12 md:col-6">
-      <label>É moita?</label>
-      <InputSwitch v-model="formObject.isMoita" class="flex" />
-    </div>
-    <div class="field col-12 md:col-6">
-      <label>Duração</label>
-      <Calendar v-model="formObject.duration" timeOnly dateFormat="yy-mm-dd" />
-    </div>
-    <div class="field col-12 md:col-6">
-      <label>Dia</label>
-      <Calendar v-model="formObject.date" dateFormat="yy-mm-dd" />
-    </div>
-    <div class="field col-12 md:col-6">
-      <label>Hora de começo</label>
-      <Calendar v-model="formObject.startTime" timeOnly dateFormat="yy-mm-dd" />
-    </div>
-    <div class="field col-12 md:col-6">
-      <label>Hora de finalização</label>
-      <Calendar v-model="formObject.endTime" timeOnly dateFormat="yy-mm-dd" />
-    </div>
+      </TabPanel>
+    </TabView>
 
     <div class="grid sidebar-footer p-2 ml-1">
       <div class="col-12 w-auto">
@@ -141,6 +152,8 @@ import { PointForm } from "@/models/point/form";
 import { LandmarkForm } from "@/models/landmark/form";
 import dayjs from "dayjs";
 import { getDistance } from "geolib";
+import TabView from "primevue/tabview";
+import TabPanel from "primevue/tabpanel";
 
 const props = defineProps<{ id: number | null }>();
 const emit = defineEmits(["changed", "cancel"]);
