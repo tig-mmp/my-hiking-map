@@ -48,6 +48,9 @@ class Landmark
     #[OneToOne(cascade: ["persist", "remove"])]
     private ?File $file = null;
 
+    #[Column]
+    private bool $isMoita = false;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -145,5 +148,15 @@ class Landmark
     {
         $this->file = $file;
         $this->fileId = $file ? $file->getId() : null;
+    }
+
+    public function isIsMoita(): bool
+    {
+        return $this->isMoita;
+    }
+
+    public function setIsMoita(bool $isMoita)
+    {
+        $this->isMoita = $isMoita;
     }
 }
