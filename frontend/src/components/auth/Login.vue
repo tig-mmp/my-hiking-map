@@ -22,7 +22,7 @@ const { post, isLoading } = useApiPost(toast);
 const login = () => post(loginApi, { username: username.value, password: password.value })
     .then((response) => {
         authStore.setToken(response.data.token);
-        router.push({ name: "routes" });
+        router.push({ name: "tracks" });
     });
 </script>
 

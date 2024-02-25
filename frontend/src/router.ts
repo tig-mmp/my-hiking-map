@@ -7,9 +7,9 @@ import {
 } from "vue-router";
 
 const login = () => import("@/components/auth/Login.vue");
-const listRoutes = () => import("@/components/ListRoutes.vue");
 const listUsers = () => import("@/components/users/ListUsers.vue");
 const listTracks = () => import("@/components/tracks/ListTracks.vue");
+const adminDashboard = () => import("@/components/AdminDashboard.vue");
 
 import { getAxiosAuth } from "@/composables/axiosInstance";
 import { useAuthStore } from "@/stores/auth";
@@ -21,22 +21,25 @@ const routes: RouteRecordRaw[] = [
     component: login,
   },
   {
-    path: "/routes",
-    name: "routes",
-    component: listRoutes,
+    path: "/",
+    name: "adminDashboard",
+    component: adminDashboard,
     meta: { admin: true },
-  },
-  {
-    path: "/users",
-    name: "users",
-    component: listUsers,
-    meta: { admin: true },
-  },
-  {
-    path: "/tracks",
-    name: "tracks",
-    component: listTracks,
-    meta: { admin: true },
+    children: [
+      {
+        path: "/tracks",
+        name: "tracks",
+        component: listTracks,
+        meta: { admin: true },
+      },
+      {
+        path: "/users",
+        alias: "/",
+        name: "users",
+        component: listUsers,
+        meta: { admin: true },
+      },
+    ],
   },
 ];
 
@@ -60,7 +63,7 @@ router.beforeEach(
       return next({ name: "login" });
     }
     if (to.name === "login" && authStore.user) {
-      return next({ name: "routes" });
+      return next({ name: "tracks" });
     }
 
     next();
