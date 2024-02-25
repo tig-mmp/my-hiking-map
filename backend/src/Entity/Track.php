@@ -134,6 +134,8 @@ class Track
             "id" => $this->id,
             "name" => $this->name,
             "startLocationId" => $this->startLocationId,
+            "startCountyId" => $this->startLocationId ? $this->startLocation->getCountyId() : null,
+            "startDistrictId" => $this->startLocationId && $this->startLocation->getCountyId() ? $this->startLocation->getCounty()->getDistrictId() : null,
             "description" => $this->description,
             "distance" => $this->distance,
             "slope" => $this->slope,

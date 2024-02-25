@@ -29,17 +29,17 @@
               <div class="field col-12 md:col-4">
                 <label>Distrito</label>
                 <Dropdown v-model="formObject.startDistrictId" editable :options="districts" optionLabel="name"
-                  inputId="id" />
+                  optionValue="id" inputId="id" />
               </div>
               <div class="field col-12 md:col-4">
                 <label>Concelho</label>
                 <Dropdown v-model="formObject.startCountyId" editable :options="startCounties" optionLabel="name"
-                  inputId="id" />
+                  optionValue="id" inputId="id" />
               </div>
               <div class="field col-12 md:col-4">
                 <label>Localização</label>
                 <Dropdown v-model="formObject.startLocationId" editable :options="startLocations" optionLabel="name"
-                  inputId="id" />
+                  optionValue="id" inputId="id" />
               </div>
             </div>
           </div>
@@ -167,7 +167,7 @@ const uploadProgress: Ref<number> = ref(0);
 let didReset = false;
 
 const submitLabel = computed(() => !props.id ? "Criar" : "Guardar");
-const startCounties = computed(() => formObject.value.startDistrictId && !!districts.value ? districts.value.find(d => formObject.value.startDistrictId === d.id)?.states : []);
+const startCounties = computed(() => formObject.value.startDistrictId && !!districts.value ? districts.value.find(d => formObject.value.startDistrictId === d.id)?.counties : []);
 const startLocations = computed(() => formObject.value.startCountyId && !!startCounties.value ? startCounties.value.find(c => formObject.value.startCountyId === c.id)?.locations : []);
 
 watch(() => props.id, (val: number | null) => {
