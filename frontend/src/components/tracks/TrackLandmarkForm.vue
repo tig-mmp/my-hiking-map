@@ -24,6 +24,15 @@
             </div>
             <ProgressBar v-if="uploadProgress > 0 && uploadProgress < 100" :value="uploadProgress" />
         </div>
+
+        <div v-if="!!coordinate" class="field col-12">
+            <Button type="button" :label="showMap ? 'Esconder mapa' : 'Mostrar mapa'" icon="pi pi-map" class="w-max"
+                @click="showMap = !showMap" />
+        </div>
+        <div v-if="showMap && !!coordinate" class="field col-12 h-8">
+            <MapView :coordinate="coordinate" />
+        </div>
+
         <div v-if="formObject.point" class="field col-12 md:col-3">
             <label>Elevação</label>
             <InputNumber v-model="formObject.point.elevation" :maxFractionDigits="3" />
@@ -56,7 +65,9 @@ import Image from 'primevue/image';
 import InputNumber from 'primevue/inputnumber';
 import ProgressBar from 'primevue/progressbar';
 import { useToast } from 'primevue/usetoast';
-import { Ref, onMounted, ref } from 'vue';
+import { Ref, computed, defineAsyncComponent, onMounted, ref } from 'vue';
+
+const MapView = defineAsyncComponent(() => import("@/components/MapView.vue"));
 
 const formObject = defineModel<LandmarkForm>({ default: { file: null, point: null } });
 
@@ -65,6 +76,9 @@ const { landmarkTypesApi, uploadApi } = useApiRoutes();
 const { BASE } = useEnvironment();
 
 const uploadProgress: Ref<number> = ref(0);
+const showMap: Ref<boolean> = ref(false);
+
+const coordinate = computed((): number[] | null => formObject.value.point ? [formObject.value.point.longitude, formObject.value.point.latitude] : null);
 
 const { load: loadLandmarkTypes, data: landmarkTypes } = useApiGet<LandmarkTypeShort[]>(toast, []);
 const getLandmarkTypes = () => loadLandmarkTypes(landmarkTypesApi, { dataType: landmarkTypeShortDataType });
