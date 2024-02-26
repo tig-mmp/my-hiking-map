@@ -119,6 +119,7 @@
             class="field col-12 border-primary-500 hover:border-cyan-700 border-round surface-overlay border-3 pt-3">
             <TrackLandmarkForm v-model="formObject.landmarks[i]" />
           </div>
+          <Button icon="pi pi-plus" aria-label="Add landmark" @click="addLandmark" />
         </div>
       </TabPanel>
     </TabView>
@@ -386,16 +387,18 @@ const haversineDistance = (coord1: PointForm, coord2: PointForm) => {
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   const distance = R * c * 1000;
   return distance;
-}
+};
 const setMoitaData = () => {
   formObject.value.groupName = "Sozinho";
   formObject.value.startDistrictId = "Santarém";
   formObject.value.startCountyId = "Ourém";
   formObject.value.startLocationId = "Moita";
-}
+};
 
 const { load: loadDistricts, data: districts } = useApiGet<DistrictShort[]>(toast, []);
 const getDistricts = () => loadDistricts(districtsApi, { dataType: districtShortDataType });
+
+const addLandmark = () => formObject.value.landmarks?.push({ file: {}, point: {} });
 
 onMounted(() => {
   if (props.id) {
