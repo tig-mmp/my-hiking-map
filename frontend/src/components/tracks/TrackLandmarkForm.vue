@@ -24,6 +24,22 @@
             </div>
             <ProgressBar v-if="uploadProgress > 0 && uploadProgress < 100" :value="uploadProgress" />
         </div>
+        <div v-if="formObject.point" class="field col-12 md:col-3">
+            <label>Elevação</label>
+            <InputNumber v-model="formObject.point.elevation" :maxFractionDigits="3" />
+        </div>
+        <div v-if="formObject.point" class="field col-12 md:col-3">
+            <label>Latitude</label>
+            <InputNumber v-model="formObject.point.latitude" :maxFractionDigits="7" />
+        </div>
+        <div v-if="formObject.point" class="field col-12 md:col-3">
+            <label>Longitude</label>
+            <InputNumber v-model="formObject.point.longitude" :maxFractionDigits="7" />
+        </div>
+        <div v-if="formObject.point" class="field col-12 md:col-3">
+            <label>Data</label>
+            <Calendar v-model="formObject.point.date" />
+        </div>
     </div>
 </template>
 
@@ -33,9 +49,11 @@ import useApiRoutes from '@/composables/api/useApiRoutes';
 import useEnvironment from '@/composables/useEnvironment';
 import { LandmarkForm } from '@/models/landmark/form';
 import { LandmarkTypeShort, landmarkTypeShortDataType } from '@/models/landmarkType/short';
+import Calendar from 'primevue/calendar';
 import Dropdown from 'primevue/dropdown';
 import { FileUploadProgressEvent, FileUploadUploadEvent } from 'primevue/fileupload';
 import Image from 'primevue/image';
+import InputNumber from 'primevue/inputnumber';
 import ProgressBar from 'primevue/progressbar';
 import { useToast } from 'primevue/usetoast';
 import { Ref, onMounted, ref } from 'vue';
@@ -44,9 +62,9 @@ const formObject = defineModel<LandmarkForm>({ default: { file: null, point: nul
 
 const toast = useToast();
 const { landmarkTypesApi, uploadApi } = useApiRoutes();
+const { BASE } = useEnvironment();
 
 const uploadProgress: Ref<number> = ref(0);
-const { BASE } = useEnvironment();
 
 const { load: loadLandmarkTypes, data: landmarkTypes } = useApiGet<LandmarkTypeShort[]>(toast, []);
 const getLandmarkTypes = () => loadLandmarkTypes(landmarkTypesApi, { dataType: landmarkTypeShortDataType });
@@ -55,5 +73,10 @@ const setUploadProgress = (event: FileUploadProgressEvent) => uploadProgress.val
 const afterUpload = (request: FileUploadUploadEvent) => formObject.value.file = JSON.parse(request.xhr.response).data;
 const cancelUpload = () => formObject.value.file = null;
 
-onMounted(() => getLandmarkTypes());
+onMounted(() => {
+    getLandmarkTypes();
+    if (!formObject.value.point) {
+        formObject.value.point = {};
+    }
+});
 </script>

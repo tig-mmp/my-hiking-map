@@ -17,21 +17,20 @@ class FileUtils
         if (!$parameters) {
             return null;
         }
-
         if ($parameters->getId()) {
-            if ($track && $track->getFileId()) {
+            if ($landmark && $landmark->getFileId()) {
+                if ($landmark->getFile()->getUrl() === $parameters->getUrl()) {
+                    return $landmark->getFile();
+                } else {
+                    @unlink($landmark->getFile()->getUrl());
+                    $entityManager->remove($track->getFile());
+                }
+            }
+            if (!$landmark && $track && $track->getFileId()) {
                 if ($track->getFile()->getUrl() === $parameters->getUrl()) {
                     return $track->getFile();
                 } else {
                     @unlink($track->getFile()->getUrl());
-                    $entityManager->remove($track->getFile());
-                }
-            }
-            if ($landmark && $landmark->getFileId()) {
-                if ($landmark->getFile()->getUrl() !== $parameters->getUrl()) {
-                    return $landmark->getFile();
-                } else {
-                    @unlink($landmark->getFile()->getUrl());
                     $entityManager->remove($track->getFile());
                 }
             }
@@ -43,12 +42,12 @@ class FileUtils
         $urlPath = explode("/", $urlTemp);
         $filename = $urlPath[sizeof($urlPath) - 1];
 
-        $newFilepath = $trackId && $landmarkId
-        ? "files/$trackId/$landmarkId/$filename"
-        : ($trackId && !$landmarkId
-            ? "files/$trackId/$filename"
-            : (!$trackId && $landmarkId ? "files/landmarks/$filename" : "files/$filename")
-        );
+        $newFilepath = ($trackId && $landmarkId
+            ? "files/$trackId/$landmarkId/$filename"
+            : ($trackId && !$landmarkId
+                ? "files/$trackId/$filename"
+                : (!$trackId && $landmarkId ? "files/landmarks/$filename" : "files/$filename")
+            ));
 
         $path = pathinfo($newFilepath);
         if (!file_exists($path["dirname"])) {
