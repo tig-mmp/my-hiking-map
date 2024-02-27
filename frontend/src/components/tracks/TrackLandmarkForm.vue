@@ -28,6 +28,7 @@
         <div v-if="!!coordinate" class="field col-12">
             <Button type="button" :label="showMap ? 'Esconder mapa' : 'Mostrar mapa'" icon="pi pi-map" class="w-max"
                 @click="showMap = !showMap" />
+            <Button type="button" label="Duplicar" icon="pi pi-plus" class="w-max ml-4" @click="duplicate" />
         </div>
         <div v-if="showMap && !!coordinate" class="field col-12 h-8">
             <MapView :coordinate="coordinate" />
@@ -70,6 +71,7 @@ import { Ref, computed, defineAsyncComponent, onMounted, ref } from 'vue';
 const MapView = defineAsyncComponent(() => import("@/components/MapView.vue"));
 
 const formObject = defineModel<LandmarkForm>({ default: { file: null, point: null } });
+const emit = defineEmits(["duplicate"]);
 
 const toast = useToast();
 const { landmarkTypesApi, uploadApi } = useApiRoutes();
@@ -86,6 +88,7 @@ const getLandmarkTypes = () => loadLandmarkTypes(landmarkTypesApi, { dataType: l
 const setUploadProgress = (event: FileUploadProgressEvent) => uploadProgress.value = event.progress;
 const afterUpload = (request: FileUploadUploadEvent) => formObject.value.file = JSON.parse(request.xhr.response).data;
 const cancelUpload = () => formObject.value.file = null;
+const duplicate = () => emit("duplicate", formObject.value);
 
 onMounted(() => {
     getLandmarkTypes();

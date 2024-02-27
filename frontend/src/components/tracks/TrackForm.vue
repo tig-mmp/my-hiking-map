@@ -117,9 +117,9 @@
         <div class="grid" v-if="formObject.landmarks">
           <div v-for="(landmark, i) in formObject.landmarks" :key="landmark.id"
             class="field col-12 border-primary-500 hover:border-cyan-700 border-round surface-overlay border-3 pt-3">
-            <TrackLandmarkForm v-model="formObject.landmarks[i]" />
+            <TrackLandmarkForm v-model="formObject.landmarks[i]" @duplicate="addLandmark" />
           </div>
-          <Button icon="pi pi-plus" aria-label="Add landmark" @click="addLandmark" />
+          <Button icon="pi pi-plus" aria-label="Add landmark" @click="addLandmark(null)" />
         </div>
       </TabPanel>
     </TabView>
@@ -398,7 +398,14 @@ const setMoitaData = () => {
 const { load: loadDistricts, data: districts } = useApiGet<DistrictShort[]>(toast, []);
 const getDistricts = () => loadDistricts(districtsApi, { dataType: districtShortDataType });
 
-const addLandmark = () => formObject.value.landmarks?.push({ file: {}, point: {} });
+const addLandmark = (landmark: LandmarkForm | null) => {
+  let newLandmark: LandmarkForm = { file: {}, point: {} };
+  if (landmark) {
+    newLandmark = { ...landmark };
+    delete newLandmark.id;
+  }
+  formObject.value.landmarks?.push(newLandmark);
+};
 
 onMounted(() => {
   if (props.id) {
