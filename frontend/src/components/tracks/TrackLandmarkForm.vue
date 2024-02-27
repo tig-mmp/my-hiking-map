@@ -47,7 +47,7 @@
         </div>
         <div v-if="formObject.point" class="field col-12 md:col-3">
             <label>Data</label>
-            <Calendar v-model="formObject.point.date" />
+            <Calendar v-model="formObject.point.date" showTime hourFormat="24" />
         </div>
     </div>
 </template>
