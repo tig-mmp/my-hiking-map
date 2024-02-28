@@ -21,9 +21,7 @@ class LandmarkFormDto
         $point = DtoUtils::getArrayOrNull($parameters, "point");
         $this->point = $point ? new PointFormDto($point) : null;
         $this->landmarkTypeId = DtoUtils::getInt($parameters, "landmarkTypeId");
-        if (!$this->landmarkTypeId) {
-            $this->landmarkTypeName = DtoUtils::getString($parameters, "landmarkTypeId");
-        }
+        $this->landmarkTypeName = !$this->landmarkTypeId ? DtoUtils::getString($parameters, "landmarkTypeId") : null;
         $file = DtoUtils::getArrayOrNull($parameters, "file");
         $this->file = $file ? new FileFormDto($file) : null;
     }
