@@ -1,4 +1,5 @@
 import { setAxiosAuth } from "@/composables/axiosInstance";
+import router from "@/router";
 import { defineStore } from "pinia";
 
 interface UserAuth {
@@ -40,6 +41,8 @@ export const useAuthStore = defineStore("auth", {
     logout: function () {
       this.token = null;
       this.user = null;
+      localStorage.removeItem("jwtToken");
+      router.push("login");
     },
   },
 });

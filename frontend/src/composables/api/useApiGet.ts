@@ -2,6 +2,9 @@ import { ref, type Ref } from "vue";
 import { axios } from "@/composables/axiosInstance";
 import { type ToastServiceMethods } from "primevue/toastservice";
 import type { AxiosResponse } from "axios";
+import { useAuthStore } from "@/stores/auth";
+
+const authStore = useAuthStore();
 
 export default function useApiGet<T>(
   toast: ToastServiceMethods | null,
@@ -53,6 +56,9 @@ export default function useApiGet<T>(
             summary: error.response.data.msg_code,
             life: 10000,
           });
+          if (error.response.data.msg_code === "Expired token"){
+            authStore.logout();
+          }
         }
         throw error;
       });
