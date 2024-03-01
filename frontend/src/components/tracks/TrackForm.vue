@@ -115,9 +115,9 @@
       </TabPanel>
       <TabPanel header="Pontos de interesse">
         <div class="grid" v-if="formObject.landmarks">
-          <div v-for="(landmark, i) in formObject.landmarks" :key="landmark.id"
+          <div v-for="(landmark, i) in formObject.landmarks" :key="i"
             class="field col-12 border-primary-500 hover:border-cyan-700 border-round surface-overlay border-3 pt-3">
-            <TrackLandmarkForm v-model="formObject.landmarks[i]" @duplicate="addLandmark" />
+            <TrackLandmarkForm v-model="formObject.landmarks[i]" @duplicate="addLandmark" @remove="removeLandmark(i)" />
           </div>
           <Button icon="pi pi-plus" aria-label="Add landmark" @click="addLandmark(null)" />
         </div>
@@ -192,7 +192,7 @@ const validateForm = () => !props.id ? create() : update();
 const { put, isLoading: isLoadingUpdate } = useApiPut(toast);
 const update = () => {
   if (!props.id) return;
-  put(getTracksApi(props.id), formObject.value).then(() => getData());
+  put(getTracksApi(props.id), formObject.value).then(() => afterSubmit());
 };
 
 const { post, isLoading: isLoadingCreate } = useApiPost(toast);
@@ -405,6 +405,11 @@ const addLandmark = (landmark: LandmarkForm | null) => {
     delete newLandmark.id;
   }
   formObject.value.landmarks?.push(newLandmark);
+};
+const removeLandmark = (index: number) => {
+  if (formObject.value.landmarks) {
+    formObject.value.landmarks.splice(index, 1);
+  }
 };
 
 onMounted(() => {

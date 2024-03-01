@@ -159,11 +159,20 @@ class Track
 
     private function getLandmarksSerialized(): array
     {
-        $files = [];
+        $landmarks = [];
         foreach ($this->landmarks as $landmark) {
-            $files[] = $landmark->serializeForm();
+            $landmarks[] = $landmark->serializeForm();
         }
-        return $files;
+        return $landmarks;
+    }
+
+    public function getLandmarkIds(): array
+    {
+        $landmarkIds = [];
+        foreach ($this->landmarks as $landmark) {
+            $landmarkIds[] = $landmark->getId();
+        }
+        return $landmarkIds;
     }
 
     public function getId(): ?int
