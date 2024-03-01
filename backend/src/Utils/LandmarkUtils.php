@@ -19,6 +19,8 @@ class LandmarkUtils
         EntityManager $entityManager, array $landmarks, ?Track $track, PointUtils $pointUtils,
         FileUtils $fileUtils, LandmarkRepository $landmarkRep, LandmarkTypeRepository $landmarkTypeRep
     ) {
+        $oldLandmarkIds = $track ? $track->getLandmarkIds() : [];
+        $ids = [];
         foreach ($landmarks as $landmarkParameters) {
             $landmarkFormDto = new LandmarkFormDto($landmarkParameters);
             if (!$landmarkFormDto->getPoint()) {
@@ -32,6 +34,15 @@ class LandmarkUtils
             $fileUtils->manageFile($entityManager, $landmarkFormDto->getFile(), $track, $landmark);
             $landmark->setTrack($track);
             $this->setLandmarkType($entityManager, $landmark, $landmarkFormDto->getLandmarkTypeId(), $landmarkFormDto->getLandmarkTypeName(), $landmarkTypeRep);
+            $ids[] = $landmark->getId();
+        }
+        $idsToRemove = array_diff($oldLandmarkIds, $ids);
+        if ($track && $idsToRemove) {
+            foreach ($track->getLandmarks() as $landmark) {
+                if (in_array($landmark->getId(), $idsToRemove)) {
+                    $entityManager->remove($landmark);
+                }
+            }
         }
     }
 
