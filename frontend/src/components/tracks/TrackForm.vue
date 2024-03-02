@@ -19,7 +19,8 @@
             </div>
             <ProgressBar v-if="(isLoadingUpdate || isLoadingCreate) && uploadProgress !== 100" :value="uploadProgress"
               class="process-bar-separator" />
-            <ProgressBar v-if="(isLoadingUpdate || isLoadingCreate) && (uploadProgress === 100 || uploadProgress == null)"
+            <ProgressBar
+              v-if="(isLoadingUpdate || isLoadingCreate) && (uploadProgress === 100 || uploadProgress == null)"
               class="text-center mb-2" mode="indeterminate" />
           </div>
 
@@ -117,7 +118,8 @@
         <div class="grid" v-if="formObject.landmarks">
           <div v-for="(landmark, i) in formObject.landmarks" :key="i"
             class="field col-12 border-primary-500 hover:border-cyan-700 border-round surface-overlay border-3 pt-3">
-            <TrackLandmarkForm v-model="formObject.landmarks[i]" @duplicate="addLandmark" @remove="removeLandmark(i)" />
+            <TrackLandmarkForm v-model="formObject.landmarks[i]" @duplicate="addLandmark" @remove="removeLandmark(i)"
+              @sort="sortLandmarks" />
           </div>
           <Button icon="pi pi-plus" aria-label="Add landmark" @click="addLandmark(null)" />
         </div>
@@ -184,7 +186,7 @@ watch(() => props.id, (val: number | null) => {
 const { load: loadTrack, data: formObject } = useApiGet<TrackForm>(toast, {});
 const getData = () => {
   if (!props.id) return;
-  loadTrack(getTracksApi(props.id), { dataType: trackFormDataType });
+  loadTrack(getTracksApi(props.id), { dataType: trackFormDataType }).then(() => sortLandmarks());
 };
 
 const validateForm = () => !props.id ? create() : update();
@@ -405,12 +407,15 @@ const addLandmark = (landmark: LandmarkForm | null) => {
     delete newLandmark.id;
   }
   formObject.value.landmarks?.push(newLandmark);
+  sortLandmarks();
 };
 const removeLandmark = (index: number) => {
   if (formObject.value.landmarks) {
     formObject.value.landmarks.splice(index, 1);
   }
+  sortLandmarks();
 };
+const sortLandmarks = () => formObject.value.landmarks.sort((a, b) => a.point.date > b.point.date ? 1 : -1);
 
 onMounted(() => {
   if (props.id) {

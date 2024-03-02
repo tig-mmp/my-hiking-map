@@ -18,8 +18,8 @@
                         @click="cancelUpload" />
                 </div>
                 <div v-if="formObject.file && formObject.file.url">
-                    <Image :src="`${BASE}${formObject.file?.url}`" :alt="formObject.file?.name" height="150" class="w-auto"
-                        preview />
+                    <Image :src="`${BASE}${formObject.file?.url}`" :alt="formObject.file?.name" height="150"
+                        class="w-auto" preview />
                 </div>
             </div>
             <ProgressBar v-if="uploadProgress > 0 && uploadProgress < 100" :value="uploadProgress" />
@@ -49,7 +49,7 @@
         </div>
         <div v-if="formObject.point" class="field col-12 md:col-3">
             <label>Data</label>
-            <Calendar v-model="formObject.point.date" showTime hourFormat="24" />
+            <Calendar v-model="formObject.point.date" showTime hourFormat="24" @input="sort" />
         </div>
     </div>
 </template>
@@ -72,7 +72,7 @@ import { Ref, computed, defineAsyncComponent, onMounted, ref } from 'vue';
 const MapView = defineAsyncComponent(() => import("@/components/MapView.vue"));
 
 const formObject = defineModel<LandmarkForm>({ default: { file: null, point: null } });
-const emit = defineEmits(["duplicate", "remove"]);
+const emit = defineEmits(["duplicate", "remove", "sort"]);
 
 const toast = useToast();
 const { landmarkTypesApi, uploadApi } = useApiRoutes();
@@ -91,11 +91,15 @@ const afterUpload = (request: FileUploadUploadEvent) => formObject.value.file = 
 const cancelUpload = () => formObject.value.file = null;
 const duplicate = () => emit("duplicate", formObject.value);
 const remove = () => emit("remove");
+const sort = () => emit("sort");
 
 onMounted(() => {
     getLandmarkTypes();
     if (!formObject.value.point) {
         formObject.value.point = {};
+    }
+    if (formObject.value.point.date) {
+        formObject.value.point.date = new Date(formObject.value.point.date);
     }
 });
 </script>
