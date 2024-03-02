@@ -150,7 +150,7 @@ class Track
             "weekNumber" => $this->weekNumber,
             "isMoita" => $this->isMoita,
             "duration" => $this->duration,
-            "date" => $this->date ? $this->date->format("Y-m-d H:i:s P") : null,
+            "date" => $this->date ? $this->date->format("Y-m-d") : null,
             "startTime" => $this->startTime,
             "endTime" => $this->endTime,
             "landmarks" => $this->getLandmarksSerialized(),
