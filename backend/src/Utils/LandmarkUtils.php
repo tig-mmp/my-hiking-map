@@ -40,6 +40,10 @@ class LandmarkUtils
         if ($track && $idsToRemove) {
             foreach ($track->getLandmarks() as $landmark) {
                 if (in_array($landmark->getId(), $idsToRemove)) {
+                    if ($landmark->getFileId()) {
+                        @unlink($landmark->getFile()->getUrl());
+                        $entityManager->remove($landmark->getFile());
+                    }
                     $entityManager->remove($landmark);
                 }
             }
