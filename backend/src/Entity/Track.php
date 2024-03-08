@@ -157,6 +157,27 @@ class Track
         ];
     }
 
+    public function serializeMap(): array
+    {
+        return [
+            "id" => $this->id,
+            "name" => $this->name,
+            "description" => $this->description,
+            "date" => $this->date ? $this->date->format("Y-m-d") : null,
+            "landmarks" => $this->getLandmarksSerialized(),
+            "points" => $this->getPointCoordinates(),
+        ];
+    }
+
+    private function getPointCoordinates(): array
+    {
+        $points = [];
+        foreach ($this->points as $point) {
+            $points[] = [$point->getLongitude(), $point->getLatitude()];
+        }
+        return $points;
+    }
+
     private function getLandmarksSerialized(): array
     {
         $landmarks = [];
