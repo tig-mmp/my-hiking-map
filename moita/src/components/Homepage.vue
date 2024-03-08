@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { defineAsyncComponent } from "vue";
 
-const Homepage = defineAsyncComponent(() => import("@/components/Homepage.vue"));
+const ShowTracks = defineAsyncComponent(() => import("@/components/ShowTracks.vue"));
 
 </script>
 
 <template>
-    <Homepage />
+    <ShowTracks />
 </template>
