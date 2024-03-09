@@ -19,10 +19,7 @@ const geojsonSource: Ref<{ data: FeatureCollection<LineString>, show: boolean }>
 });
 
 const { load: load, data: tracks, isLoading } = useApiGet<TrackMap[]>([]);
-const getData = () => load(tracksApi, { dataType: trackMapDataType })
-  .then(() => {
-    showTracksAtATime(1000);
-  });
+const getData = () => load(tracksApi, { dataType: trackMapDataType }).then(() => showTracksAtATime(1000));
 
 const showTracksAtATime = (delay: number) => {
   let index = 0;
@@ -30,14 +27,7 @@ const showTracksAtATime = (delay: number) => {
     if (index < tracks.value.length) {
       const track = tracks.value[index];
       if (track.points) {
-        geojsonSource.value.data.features[0] = {
-          type: "Feature",
-          properties: { color: generateRandomColor() },
-          geometry: {
-            type: "LineString",
-            coordinates: track.points,
-          },
-        };
+        geojsonSource.value.data.features[0] = createFeature(track.points);
         updateMap();
       }
       index++;
@@ -51,16 +41,21 @@ const showTracksAtATime = (delay: number) => {
 const showAllTracks = () => {
   geojsonSource.value.data.features = [];
   tracks.value.forEach(track => {
-    geojsonSource.value.data.features.push({
-      type: "Feature",
-      properties: { color: generateRandomColor() },
-      geometry: {
-        type: "LineString",
-        coordinates: track.points,
-      },
-    });
+    if (track.points) {
+      geojsonSource.value.data.features.push(createFeature(track.points));
+    }
   });
   updateMap();
+};
+const createFeature = (coordinates: number[]) => {
+  return {
+    type: "Feature",
+    properties: { color: generateRandomColor() },
+    geometry: {
+      type: "LineString",
+      coordinates: coordinates,
+    },
+  };
 };
 
 const updateMap = () => {
