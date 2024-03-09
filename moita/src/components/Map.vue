@@ -24,13 +24,11 @@ const layout = ref({
 </script>
 
 <template>
-    <div style="height: 100vh; width: 100vw;">
-        <MglMap :mapStyle="MAP_STYLE" :zoom="zoom" :center="center">
-            <MglGeoJsonSource v-if="props.data" source-id="geojson" :data="props.data">
-                <MglLineLayer v-if="props.show" layer-id="geojson" :layout="layout" :paint="linePaint" />
-            </MglGeoJsonSource>
-        </MglMap>
-    </div>
+    <MglMap :mapStyle="MAP_STYLE" :zoom="zoom" :center="center">
+        <MglGeoJsonSource v-if="props.data" source-id="geojson" :data="props.data">
+            <MglLineLayer v-if="props.show" layer-id="geojson" :layout="layout" :paint="linePaint" />
+        </MglGeoJsonSource>
+    </MglMap>
 </template>
 
 <style lang="scss">
@@ -39,5 +37,9 @@ const layout = ref({
 .mgl-wrapper {
     position: absolute;
     inset: 0;
+}
+
+div.mgl-container>div.mgl-wrapper.maplibregl-map {
+    display: contents;
 }
 </style>
