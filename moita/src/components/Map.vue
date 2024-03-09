@@ -13,7 +13,7 @@ const center: Ref<LngLatLike> = ref({ lat: 39.64957895555594, lon: -8.6678717560
 
 const zoom: Ref<number> = ref(14);
 const linePaint = ref({
-    "line-color": "#FF0000",
+    "line-color": ["get", "color"],
     "line-width": 6
 });
 
