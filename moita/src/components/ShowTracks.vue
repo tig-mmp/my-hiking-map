@@ -6,6 +6,7 @@ import useApiGet from "@/composables/api/useApiGet";
 import { FeatureCollection, LineString } from "geojson";
 
 const Map = defineAsyncComponent(() => import("@/components/Map.vue"));
+const Loading = defineAsyncComponent(() => import("@/components/Loading.vue"));
 
 const { tracksApi } = useApiRoutes();
 
@@ -73,5 +74,6 @@ onMounted(() => getData());
 </script>
 
 <template>
-  <Map :show="geojsonSource.show" :data="geojsonSource.show ? geojsonSource.data : null" />
+  <Loading v-if="isLoading" />
+  <Map v-else :show="geojsonSource.show" :data="geojsonSource.show ? geojsonSource.data : null" />
 </template>
