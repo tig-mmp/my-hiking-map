@@ -3,9 +3,11 @@ import { Ref, ref } from "vue";
 import useEnvironment from "@/composables/useEnvironment";
 import { MglGeoJsonSource, MglLineLayer, MglMap } from "vue-maplibre-gl";
 import { LngLatLike } from "maplibre-gl";
-import { FeatureCollection, LineString } from 'geojson';
+import { FeatureCollection, LineString } from "geojson";
 
 const { MAP_STYLE } = useEnvironment();
+
+const props = defineProps<{ data: FeatureCollection<LineString> | null, show: boolean }>();
 
 const center: Ref<LngLatLike> = ref({ lat: 39.64957895555594, lon: -8.667871756075451 });
 
@@ -19,9 +21,6 @@ const layout = ref({
     "line-cap": "round",
     "line-join": "round",
 });
-
-const props = defineProps<{ data: FeatureCollection<LineString> | null, show: boolean }>();
-
 </script>
 
 <template>
