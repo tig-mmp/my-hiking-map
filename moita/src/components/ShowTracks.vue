@@ -31,7 +31,7 @@ const showTracksAtATime = (delay: number) => {
       if (track.points) {
         geojsonSource.value.data.features[0] = {
           type: "Feature",
-          properties: {},
+          properties: { color: generateRandomColor() },
           geometry: {
             type: "LineString",
             coordinates: track.points,
@@ -52,7 +52,7 @@ const showAllTracks = () => {
   tracks.value.forEach(track => {
     geojsonSource.value.data.features.push({
       type: "Feature",
-      properties: {},
+      properties: { color: generateRandomColor() },
       geometry: {
         type: "LineString",
         coordinates: track.points,
@@ -65,7 +65,8 @@ const showAllTracks = () => {
 const updateMap = () => {
   geojsonSource.value.show = false;
   setTimeout(() => geojsonSource.value.show = true, 1);
-}
+};
+const generateRandomColor = () => ("#" + Math.floor(Math.random() * 16777215).toString(16));
 
 onMounted(() => getData());
 
