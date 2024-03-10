@@ -72,6 +72,17 @@ class Landmark
         ];
     }
 
+    public function serializeMap(): array
+    {
+        return [
+            "id" => $this->id,
+            "name" => $this->name,
+            "file" => $this->getFileSerialized(),
+            "point" => $this->getPointSerialized(),
+            "landmarkTypeName" => $this->landmarkTypeId ? $this->landmarkType->getName() : null,
+        ];
+    }
+
     private function getFileSerialized(): ?array
     {
         return $this->fileId ? $this->file->serializeForm() : null;

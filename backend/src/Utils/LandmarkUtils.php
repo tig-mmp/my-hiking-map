@@ -32,6 +32,9 @@ class LandmarkUtils
                 $landmark = $this->create($entityManager, $landmarkFormDto, $pointUtils);
             }
             $fileUtils->manageFile($entityManager, $landmarkFormDto->getFile(), $track, $landmark);
+            if ($track) {
+                $landmark->setIsMoita($track->getIsMoita());
+            }
             $landmark->setTrack($track);
             $this->setLandmarkType($entityManager, $landmark, $landmarkFormDto->getLandmarkTypeId(), $landmarkFormDto->getLandmarkTypeName(), $landmarkTypeRep);
             $ids[] = $landmark->getId();
@@ -90,5 +93,17 @@ class LandmarkUtils
         }
         $landmark->setLandmarkType($landmarkType);
         return $landmarkType;
+    }
+
+    public function serialize(Landmark $landmark, string $dataType): ?array
+    {
+        if ($dataType === "list") {
+            return $landmark->serializeList();
+        } elseif ($dataType === "form") {
+            return $landmark->serializeForm();
+        } elseif ($dataType === "map") {
+            return $landmark->serializeMap();
+        }
+        return null;
     }
 }

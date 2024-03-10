@@ -164,7 +164,6 @@ class Track
             "name" => $this->name,
             "description" => $this->description,
             "date" => $this->date ? $this->date->format("Y-m-d") : null,
-            "landmarks" => $this->getLandmarksSerialized(),
             "points" => $this->getPointCoordinates(),
         ];
     }
@@ -352,7 +351,7 @@ class Track
         $this->weekNumber = $weekNumber;
     }
 
-    public function isIsMoita(): bool
+    public function getIsMoita(): bool
     {
         return $this->isMoita;
     }

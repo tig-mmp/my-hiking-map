@@ -10,7 +10,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class TracksMoitaController extends AbstractController
 {
     #[Route("/api/tracks/moita", name: "list-tracks-moita", methods: ["GET"])]
-    public function listTracks(TrackRepository $trackRep): JsonResponse
+    public function listTracksMoita(TrackRepository $trackRep): JsonResponse
     {
         $tracks = $trackRep->findBy(["isMoita" => true]);
         $tracksSerialized = [];
