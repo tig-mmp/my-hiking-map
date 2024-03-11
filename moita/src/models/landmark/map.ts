@@ -4,7 +4,7 @@ import { FileMap } from "@/models/file/map";
 export interface LandmarkMap {
   id?: number;
   name?: string;
-  landmarkTypeId?: number;
+  landmarkTypeName?: string;
   file?: FileMap | null;
   point?: PointMap;
 }
