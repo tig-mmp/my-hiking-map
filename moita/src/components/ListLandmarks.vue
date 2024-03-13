@@ -26,3 +26,49 @@ onMounted(() => getData());
     </div>
   </div>
 </template>
+
+<style>
+div.landmarks {
+  text-align: center;
+}
+
+div.landmarks>img.landmark {
+  margin: 6px;
+}
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.wrapper {
+  width: 24%;
+  margin: 8px;
+  border: 4px solid #2196f3;
+}
+
+.wrapper:hover {
+  border-color: #008494;
+}
+
+.padded-container {
+  position: relative;
+  overflow: hidden;
+  padding-bottom: 12%;
+}
+
+.img {
+  width: 100%;
+  height: auto;
+}
+
+.centered {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  right: -50%;
+  bottom: -50%;
+  margin: auto;
+}
+</style>
