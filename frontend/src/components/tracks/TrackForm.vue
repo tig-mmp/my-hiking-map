@@ -116,7 +116,7 @@
       </TabPanel>
       <TabPanel header="Pontos de interesse">
         <div class="grid" v-if="formObject.landmarks">
-          <div v-for="(landmark, i) in formObject.landmarks" :key="i"
+          <div v-for="(landmark, i) in formObject.landmarks" :key="`${landmark.id}${i}`"
             class="field col-12 border-primary-500 hover:border-cyan-700 border-round surface-overlay border-3 pt-3">
             <TrackLandmarkForm v-model="formObject.landmarks[i]" @duplicate="addLandmark" @remove="removeLandmark(i)"
               @sort="sortLandmarks" />
