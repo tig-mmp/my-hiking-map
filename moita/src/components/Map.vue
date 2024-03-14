@@ -11,7 +11,7 @@ const props = defineProps<{ data: FeatureCollection<LineString> | null, show: bo
 
 const center: Ref<LngLatLike> = ref({ lat: 39.64957895555594, lon: -8.667871756075451 });
 
-const zoom: Ref<number> = ref(14);
+const zoom: Ref<number> = ref(13);
 const linePaint = ref({
     "line-color": ["get", "color"],
     "line-width": 6
@@ -34,12 +34,12 @@ const layout = ref({
 <style lang="scss">
 @import "https://unpkg.com/maplibre-gl@2.3.0/dist/maplibre-gl.css";
 
-.mgl-wrapper {
-    position: absolute;
-    inset: 0;
+.mapboxgl-map,
+.maplibregl-map {
+    overflow: visible;
 }
 
-div.mgl-container>div.mgl-wrapper.maplibregl-map {
-    display: contents;
+.maplibregl-ctrl-bottom-right {
+    display: none;
 }
 </style>

@@ -70,5 +70,16 @@ onMounted(() => getData());
 
 <template>
   <Loading v-if="isLoading" />
-  <Map v-else :show="geojsonSource.show" :data="geojsonSource.show ? geojsonSource.data : null" />
+  <div v-else class="map-container">
+    <Map :show="geojsonSource.show" :data="geojsonSource.show ? geojsonSource.data : null" />
+  </div>
 </template>
+
+<style scoped>
+.map-container {
+  width: 100vw;
+  height: 30rem;
+  padding-top: 100px;
+  display: flex;
+}
+</style>
