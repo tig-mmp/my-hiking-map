@@ -19,7 +19,10 @@ const geojsonSource: Ref<{ data: FeatureCollection<LineString>, show: boolean }>
 });
 
 const { load: load, data: tracks, isLoading } = useApiGet<TrackMap[]>([]);
-const getData = () => load(tracksApi, { dataType: trackMapDataType }).then(() => showTracksAtATime(1000));
+const getData = () => load(tracksApi, { dataType: trackMapDataType }).then(() => {
+  tracks.value.sort(() => Math.random() - 0.5);
+  showTracksAtATime(1000);
+});
 
 const showTracksAtATime = (delay: number) => {
   let index = 0;
