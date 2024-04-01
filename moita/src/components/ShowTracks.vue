@@ -18,10 +18,11 @@ const geojsonSource: Ref<{ data: FeatureCollection<LineString>, show: boolean }>
   show: false,
 });
 
+let delay = 3000;
 const { load: load, data: tracks, isLoading } = useApiGet<TrackMap[]>([]);
 const getData = () => load(tracksApi, { dataType: trackMapDataType }).then(() => {
   tracks.value.sort(() => Math.random() - 0.5);
-  showTracksAtATime(1000);
+  showTracksAtATime(delay);
 });
 
 const showTracksAtATime = (delay: number) => {
@@ -34,6 +35,7 @@ const showTracksAtATime = (delay: number) => {
         updateMap();
       }
       index++;
+      delay = Math.max(500, delay - 500);
       setTimeout(showATrackAtATime, delay);
     } else {
       showAllTracks();
